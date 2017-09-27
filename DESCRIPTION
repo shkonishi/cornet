@@ -9,10 +9,12 @@ Imports:
     dendextend,
     dplyr, 
     dynamicTreeCut,
+    foreach,
     ggplot2,
     gplots,
     igraph,
     minerva,
+    parallel,
     tidyr
 Description: This package contains tools of co-expressed genes network tools from multivariate data. 
     I was deeply impressed by wgcna and minerva package, so I have tried to grasping of gene 

@@ -18,19 +18,21 @@
 #' fp <- system.file("extdata/nfpkm_rnsq.txt", package = "rsko")
 #' nfpkm <- read.table(fp, header=TRUE, stringsAsFactors = FALSE)
 #'
-#' # remove row count
-#' dat <- nfpkm[-1:-3][colSums(nfpkm[-1:-3]) != 0]
+#' # sampling 200 genes
+#' dat <- nfpkm[,sample(5:ncol(nfpkm), 200)]
 #'
 #' # corheat with dynamic tree cut
 #' res <- corheat(dat=dat, distm="spearman", clm="average", method_dycut="tree", draw=TRUE)
+#'
 #' @export
 corheat <- function(dat, distm, clm, method_dycut, draw){
-# minerva::mine(dat, alpha=1.0)
+  # distm="spearman"; clm="average"; method_dycut="tree"; draw=TRUE
+
   # argument check: dat ----
   if(class(dat)=="data.frame"|class(dat)=="matrix"){
     if(ncol(dat) > 1000){
       cat(" In case of 'ncol(dat)' over 1000, no drawing heat map of all genes, and just return hclust object.")
-      smp_genes <- sample(1:ncol(dat), 1000)
+      dat <- dat[,sample(1:ncol(dat), 1000)]
     }
   } else {
     stop("'dat' class is data frame or matrix")
@@ -79,60 +81,57 @@ corheat <- function(dat, distm, clm, method_dycut, draw){
     stop('Select a distance measure form c(\"squarepearson\", \"pearson\", \"abspearson\") ')
   }
 
-
   # dynamic cut  method "tree", "hybrid" ----
   dycmethods <- c("tree", "hybrid", "height")
   if(!any(dycmethods %in% method_dycut)){
     stop("'method_dycut' select from 'tree','hybrid', and 'height'.")
   }
-  # method tree  method hybrid
+
+  # dynamicTree cutmethod "tree" or "hybrid" ----
+  ## leaf label(tree order) ----
+  if(any(length(labels(r_hcl)))){
+    lab <- r_hcl$labels[r_hcl$order]
+  }else{
+    lab <- as.character(1:ncol(dat))
+  }
+  ## cutreeDynamic
   if (method_dycut=="tree"){
     dyct <- dynamicTreeCut::cutreeDynamic(dendro = r_hcl, method = method_dycut )
+    dyct <- dyct[r_hcl$order]
+    names(dyct) <- lab
+
   } else if (method_dycut=="hybrid"){
     dyct <- dynamicTreeCut::cutreeDynamic(dendro = r_hcl, distM = as.matrix(dis.mat), method = method_dycut )
+    dyct <- dyct[r_hcl$order]
+    names(dyct) <- lab
   } else {
     stop("cut height still be deveropping")
   }
 
+  ## create colour(tree order) -----
   gg_color_hue <- function(n) {
     hues = seq(15, 375, length = n + 1)
     hcl(h = hues, l = 65, c = 100)[1:n]
   }
-
-  ncl <- length(unique(dyct))
-  vcol <- gg_color_hue(ncl)
-  cols.ccl <- vcol[as.factor(dyct)]
-
-  # leaf label ----
-  if(any(length(labels(r_hcl)))){
-    lab <- r_hcl$labels
-  }else{
-    lab <- as.character(1:ncol(dat))
-  }
-
-  names(dyct) <- lab
-
-  # create leaf colour with dynamiccut cluster
-  leaf_col <- labels(r_den)
+  vcol <- gg_color_hue(length(unique(dyct))) # colours corresponding to clusters
+  cols.ccl <- vcol[as.factor(dyct)] # vector of leaf colours
   llab <- split(lab, factor(dyct))
-  invisible(lapply(seq_along(llab),
-                   function(i){leaf_col[leaf_col %in% llab[[i]]] <<- vcol[i]}))
 
-  # add edge colour ----
+
+  # modify dendrogram object with 'dendextend' ----
+  ## add edge colour concatenated to leaf belongs to same cluster ----
   f <- function(x, y){
     r_den <<- dendextend::set(r_den, "by_labels_branches_col", value = x, TF_values = y)
   }
   invisible(mapply(f, llab, vcol))
 
 
-  # set branch width, leaf labels color and labels cex
+  ## set parameter of these branch width, leaf labels color and labels cex to dendrogram object. ----
   r_den <- r_den %>%
     dendextend::set("branches_lwd", value = 0.5) %>%
-    dendextend::set("labels_col", value = leaf_col) %>%
+    dendextend::set("labels_col", value = cols.ccl) %>%
     dendextend::set("labels_cex", 0.5)
 
-  # method hybrid
-  # dyct <- dynamicTreeCut::cutreeDynamic(dendro = r_hcl, distM = as.matrix(dis.mat), method = method_dycut )
 
   # draw heat map -----
   if(draw==TRUE){

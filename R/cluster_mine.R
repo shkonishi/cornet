@@ -7,6 +7,7 @@
 #' @examples
 #' # sample data, result of 'cluster_mat'
 #' @importFrom minerva mine
+#' @importFrom foreach foreach %dopar%
 #' @export
 cluster_mine <- function(cl_dat){
   # argument check: cl_dat
@@ -18,36 +19,25 @@ cluster_mine <- function(cl_dat){
     stop("'cl_dat' is a list of multi data frame, or a data frame")
   }
 
-  # extract edge list from square matrix ----
-  mat_to_edge <- function(mat){
-    bit <- cbind(unlist(lapply(seq(nrow(mat)-1), function(i)rep(i,(nrow(mat)-i)))),
-                 unlist(lapply(seq(nrow(mat))[-1], function(i)i:(nrow(mat))))
-    )
-    if(identical(rownames(mat), NULL)){
-      x_id=bit[,1]; y_id=bit[,2]
-    } else {
-      x_id=rownames(mat)[bit[,1]]; y_id=rownames(mat)[bit[,2]]
-    }
-    data.frame(x_id, y_id)
+  # parse result of minerva::mine ----
+  f <- function(x){
+    res.mine <-  minerva::mine(x, alpha = 0.6, n.cores = 2) # mine
+    # create edge list
+    edge <- cornet::mat_to_edge(res.mine$MIC)[1:2]
+    mic <- cornet::mat_to_edge(res.mine$MIC)[,3] # mic
+    mas <- cornet::mat_to_edge(res.mine$MAS)[,3] # mas
+    mev <- cornet::mat_to_edge(res.mine$MEV)[,3] # mev
+    mcn <- cornet::mat_to_edge(res.mine$MCN)[,3] # mcn
+    micr2 <- cornet::mat_to_edge(res.mine$MICR2)[,3] # micr2
+    gmic <- cornet::mat_to_edge(res.mine$GMIC)[,3] # gmic
+    tic <- cornet::mat_to_edge(res.mine$TIC)[,3] # tic
+    dat <- data.frame(edge, mic, mas, mev, mcn, micr2, gmic, tic)
+    dat <- dat[order(dat$tic, decreasing = T),]
   }
 
-  # parse result of minerva::mine ----
-  sum_mine <-
-    lapply(loops,
-           function(i){
-             x <- cl_dat[[i]] # data frame of respectiv clusters
-             res.mine <-  minerva::mine(x, alpha = 0.6, n.cores = 2) # mine
-             mic <- res.mine$MIC; mic <- mic[lower.tri(mic)]
-             mas <- res.mine$MAS; mas <- mas[lower.tri(mas)]
-             mev <- res.mine$MEV; mev <- mev[lower.tri(mev)]
-             mcn <- res.mine$MCN; mcn <- mcn[lower.tri(mcn)]
-             micr2 <- res.mine$MICR2; micr2 <- micr2[lower.tri(micr2)]
-             gmic <- res.mine$GMIC; gmic <- gmic[lower.tri(gmic)]
-             tic <- res.mine$TIC; tic <- tic[lower.tri(tic)]
-             edge <- mat_to_edge(res.mine$MIC)
-             dat <- data.frame(edge, mic, mas, mev, mcn, micr2, gmic, tic)
-           }
-    )
+  x <- NULL
+  sum_mine <- foreach::foreach(x = cl_dat) %dopar% {f(x)}
+
   names(sum_mine) <- names(cl_dat)
   return(sum_mine)
 }

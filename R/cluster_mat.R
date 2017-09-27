@@ -43,10 +43,10 @@
 #'
 #' # res3 <- cluster_mat(dat = dat3, distm = "spearman", clm = "average",
 #' #     column = 3:ncol(dat3), method_dycut = "tree", x_fctr=dat3$days, rep_fctr=dat3$reps)
-#' @importFrom amap Dist
 #' @import dplyr
 #' @import ggplot2
-#' @importFrom  tidyr gather
+#' @importFrom amap Dist
+#' @importFrom tidyr gather
 #' @importFrom graphics barplot layout layout.show par plot text
 #' @importFrom stats sd hclust as.dendrogram median
 #' @export
