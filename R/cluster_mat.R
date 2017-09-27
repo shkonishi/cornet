@@ -24,10 +24,10 @@
 #' # fp <- system.file("extdata/nfpkm_rnsq.txt", package = "rsko")
 #' # nfpkm <- read.table(fp, header=TRUE, stringsAsFactors = FALSE)
 #'
-#' ## dat1: row count remove
-#' # dat1 <- data.frame(nfpkm[1:3], nfpkm[-1:-3][colSums(nfpkm[-1:-3]) != 0])
+#' ## dat1:
+#' # dat1 <- nfpkm
 #' # res1 <- cluster_mat(dat = dat1, distm = "spearman", clm = "average",
-#' #     column = 4:ncol(dat1), method_dycut = "tree",
+#' #     column = 5:ncol(dat1), method_dycut = "tree",
 #' #     y_fctr = dat1$runs, x_fctr = dat1$days, rep_fctr = dat1$reps)
 #'
 #' # dat2: no replicate and y_fctr
@@ -40,7 +40,6 @@
 #' ## dat3: no y_fctr
 #' # dat3 <- nfpkm[nfpkm$runs == 1, -1]
 #' # dat3 <- data.frame(dat3[1:2], dat3[-1:-2][colSums(dat3[-1:-2]) != 0])
-#'
 #' # res3 <- cluster_mat(dat = dat3, distm = "spearman", clm = "average",
 #' #     column = 3:ncol(dat3), method_dycut = "tree", x_fctr=dat3$days, rep_fctr=dat3$reps)
 #' @import dplyr
@@ -69,7 +68,7 @@ cluster_mat <- function(dat, distm, clm, column, method_dycut, y_fctr, x_fctr, r
   # draw dendrogram with cluster -----
   ## leaf label (leaf order) ----
   if(any(length(labels(r_hcl)))){
-    lab <- r_hcl$labels[r_hcl$order]
+    lab <- labels(r_den)
   }else{
     lab <- as.character(1:ncol(dat))[r_hcl$order]
   }
@@ -80,7 +79,7 @@ cluster_mat <- function(dat, distm, clm, column, method_dycut, y_fctr, x_fctr, r
     hcl(h = hues, l = 65, c = 100)[1:n]
   }
   vcol <- gg_color_hue(length(unique(dyct)))
-  leaf_col <- vcol[as.factor(dyct)][r_hcl$order] # leaf order
+  leaf_col <- vcol[as.factor(dyct)] # leaf order
   llab <- split(lab, factor(dyct))
 
 
@@ -134,6 +133,7 @@ cluster_mat <- function(dat, distm, clm, column, method_dycut, y_fctr, x_fctr, r
 
     ## add cluster number and mean of replicate. ----
     cl_levels <- as.character(cl_txt)
+    dyct <- dyct[names(zdat)[-1:-4]] # sample order
     gg_dat <- data.frame(x_fctr, rep_fctr, zdat[column]) %>%
       tidyr::gather(key="genes", value="value", -1:-2, factor_key = TRUE) %>%
       mutate(cl=factor(dyct[factor(genes, levels=names(zdat[column]))], levels=cl_levels)) %>%
@@ -168,6 +168,7 @@ cluster_mat <- function(dat, distm, clm, column, method_dycut, y_fctr, x_fctr, r
 
     ## add cluster number ----
     cl_levels <- as.character(cl_txt)
+    dyct <- dyct[names(zdat)[-1:-4]] # sample order
     gg_dat <- data.frame(x_fctr, zdat[column]) %>%
       tidyr::gather(key="genes", value="value", -1, factor_key = TRUE) %>%
       mutate(cl=factor(dyct[factor(genes, levels=names(zdat[column]))], levels=cl_levels))
@@ -205,6 +206,7 @@ cluster_mat <- function(dat, distm, clm, column, method_dycut, y_fctr, x_fctr, r
 
     ## add cluster number and mean of replicate. ----
     cl_levels <- as.character(cl_txt) # cluster column's level
+    dyct <- dyct[names(zdat)[-1:-4]] # sample order
     gg_dat <- data.frame(y_fctr, x_fctr, rep_fctr, zdat[column]) %>%
       tidyr::gather(key="genes", value="value", -1:-3, factor_key = TRUE) %>%
       mutate(cl=factor(dyct[factor(genes, levels=names(zdat[column]))], levels=cl_levels)) %>%
