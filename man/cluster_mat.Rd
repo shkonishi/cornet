@@ -7,11 +7,11 @@
 cluster_mat(dat, distm, clm, column, method_dycut, y_fctr, x_fctr, rep_fctr)
 }
 \arguments{
-\item{dat}{argument1}
+\item{dat}{data frame or matrix}
 
-\item{distm}{argument2}
+\item{distm}{distance measure from amap::Dist}
 
-\item{clm}{hclust}
+\item{clm}{hclust methods}
 
 \item{column}{column which containing expression data}
 

@@ -1,13 +1,22 @@
 Package: cornet
 Type: Package
-Title: correlation and mic graph from multivariate data
+Title: Cunstruction of correlation network form transcriptome data
 Version: 0.1.0
-Author@R: Shogo Konishi <shkonishi@gmail.com> [aut, cre]
+Author: Shogo Konishi <shkonishi@gmail.com> 
 Maintainer: Shogo Konishi <shkonishi@gmail.com>
-Imports: 
+Imports:
+    amap,
+    dendextend,
+    dplyr, 
+    dynamicTreeCut,
+    ggplot2,
+    gplots,
     igraph,
-    minerva
-Description: correlation and mic graph from multivariate data
+    minerva,
+    tidyr
+Description: This package contains tools of co-expressed genes network tools from multivariate data. 
+    I was deeply impressed by wgcna and minerva package, so I have tried to grasping of gene 
+    network from transcriptome data using weighted and/or unweighted network.
 License: MIT + file LICENSE
 Encoding: UTF-8
 LazyData: true

@@ -18,6 +18,20 @@ cluster_mine <- function(cl_dat){
     stop("'cl_dat' is a list of multi data frame, or a data frame")
   }
 
+  # extract edge list from square matrix ----
+  mat_to_edge <- function(mat){
+    bit <- cbind(unlist(lapply(seq(nrow(mat)-1), function(i)rep(i,(nrow(mat)-i)))),
+                 unlist(lapply(seq(nrow(mat))[-1], function(i)i:(nrow(mat))))
+    )
+    if(identical(rownames(mat), NULL)){
+      x_id=bit[,1]; y_id=bit[,2]
+    } else {
+      x_id=rownames(mat)[bit[,1]]; y_id=rownames(mat)[bit[,2]]
+    }
+    data.frame(x_id, y_id)
+  }
+
+  # parse result of minerva::mine ----
   sum_mine <-
     lapply(loops,
            function(i){

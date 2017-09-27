@@ -1,9 +1,9 @@
 #' Cluster_mat
 #' @description Cluster_mat
 #' @usage cluster_mat(dat, distm, clm, column, method_dycut, y_fctr, x_fctr, rep_fctr)
-#' @param dat argument1
-#' @param distm argument2
-#' @param clm hclust
+#' @param dat data frame or matrix
+#' @param distm distance measure from amap::Dist
+#' @param clm hclust methods
 #' @param column column which containing expression data
 #' @param method_dycut method of dynamic cut
 #' @param x_fctr x-axis factor for ggplot object like matplot
@@ -44,14 +44,17 @@
 #' # res3 <- cluster_mat(dat = dat3, distm = "spearman", clm = "average",
 #' #     column = 3:ncol(dat3), method_dycut = "tree", x_fctr=dat3$days, rep_fctr=dat3$reps)
 #' @importFrom amap Dist
-#' @importFrom graphics barplot layout layout.show par
-#' @importFrom stats sd
+#' @import dplyr
+#' @import ggplot2
+#' @importFrom  tidyr gather
+#' @importFrom graphics barplot layout layout.show par plot text
+#' @importFrom stats sd hclust as.dendrogram median
 #' @export
 cluster_mat <- function(dat, distm, clm, column, method_dycut, y_fctr, x_fctr, rep_fctr){
 
   mat <- as.matrix(dat[column])
   dis.mat <- amap::Dist(t(mat), method = distm)
-  r_hcl <- hclust(dis.mat, method = clm)
+  r_hcl <- stats::hclust(dis.mat, method = clm)
   r_den <- dendextend::hang.dendrogram(as.dendrogram(r_hcl))
 
   # method tree  method hybrid ----
@@ -100,7 +103,7 @@ cluster_mat <- function(dat, distm, clm, column, method_dycut, y_fctr, x_fctr, r
   lay <- graphics::layout(gmat, widths=c(10,10), heights=c(4,1), respect = T)
   #graphics::layout.show(lay)
   graphics::par(mar=c(0,2,0,0))
-  plot(r_den, leaflab="none")
+  graphics::plot(r_den, leaflab="none")
 
   ## barplot cluster side bar ----
   par(mar=c(0,2,2,0))
@@ -111,7 +114,7 @@ cluster_mat <- function(dat, distm, clm, column, method_dycut, y_fctr, x_fctr, r
   cmsum <- cumsum(cl_num)
   cl_txt_al[(cmsum-cl_num/2)] <- names(cl_num)
   bp <- graphics::barplot(rep(1, length(cols.ccl)), yaxt="n", border = cols.ccl.lo, col=cols.ccl.lo)
-  text(bp, y = 0.5, labels = cl_txt_al, col="white")
+  graphics::text(bp, y = 0.5, labels = cl_txt_al, col="white")
 
 
 
