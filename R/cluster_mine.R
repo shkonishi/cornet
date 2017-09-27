@@ -34,7 +34,6 @@ cluster_mine <- function(cl_dat){
     dat <- data.frame(edge, mic, mas, mev, mcn, micr2, gmic, tic)
     dat <- dat[order(dat$tic, decreasing = T),]
   }
-
   x <- NULL
   sum_mine <- foreach::foreach(x = cl_dat) %dopar% {f(x)}
 
