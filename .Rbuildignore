@@ -1,2 +1,6 @@
 ^.*\.Rproj$
 ^\.Rproj\.user$
+^\.DS_Store$
+^README\.Rmd$
+^README\.md$
+^README_files$
