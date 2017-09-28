@@ -17,8 +17,7 @@ Imports:
     parallel,
     tidyr
 Description: This package contains tools of co-expressed genes network tools from multivariate data. 
-    I was deeply impressed by wgcna and minerva package, so I have tried to grasping of gene 
-    network from transcriptome data using weighted and/or unweighted network.
+    I was deeply impressed by wgcna and minerva package, so I have tried to grasping of gene network from transcriptome data using weighted and/or unweighted network.
 Depends: R (>= 2.10)
 License: MIT + file LICENSE
 Encoding: UTF-8

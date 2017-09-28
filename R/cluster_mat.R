@@ -51,7 +51,7 @@
 #' @export
 cluster_mat <- function(dat, distm, clm, column, method_dycut, y_fctr, x_fctr, rep_fctr){
 
-  mat <- as.matrix(dat[column])
+  mat <- dat[column]
   dis.mat <- amap::Dist(t(mat), method = distm)
   r_hcl <- stats::hclust(dis.mat, method = clm)
   r_den <- dendextend::hang.dendrogram(as.dendrogram(r_hcl))

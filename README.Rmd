@@ -16,19 +16,73 @@ ls("package:cornet")
 ```
 
 
-### corheat
-```{r fig.height=10, fig.width=10}
+### data
+```{r}
 # data: normalized fpkm
 fp <- system.file("extdata/nfpkm_rnsq.txt", package = "rsko")
 nfpkm <- read.table(fp, header=TRUE, stringsAsFactors = FALSE)
 
 # sampling 200 genes
 set.seed(1)
-dat <- nfpkm[,sample(5:ncol(nfpkm), 200)]
+dat <- nfpkm[,c(1:4,sample(5:ncol(nfpkm), 200))]
+dat[1:6,1:6]; dim(dat)
+```
 
+
+### corheat
+- heatmap書くだけ, 
+- `abspearson`, `squaredpearson`,
+```{r fig.height=8, fig.width=8}
 # corheat with dynamic tree cut
-res <- cornet::corheat(dat=dat, distm="spearman", clm="average", 
-                       method_dycut="tree", draw=TRUE)
+cornet::corheat(dat=dat[-1:-4], distm="spearman", clm="average", 
+                method_dycut="tree", draw=TRUE)
+# cornet::corheat(dat=dat[-1:-4], distm="abspearson", clm="average", 
+#                 method_dycut="tree", draw=TRUE)
+# cornet::corheat(dat=dat[-1:-4], distm="squarepearson", clm="average", 
+#                 method_dycut="tree", draw=TRUE)
 
 ```
+
+### cluster_mat
+- `amap::Dist`のメソッドから距離定義を選択
+- 別手法で作成した距離行列を`as.dist`で変換したdistオブジェクトでも良い
+```{r}
+res <- cornet::cluster_mat(dat = dat, distm = "spearman", clm = "average",
+                           column = 5:ncol(dat), method_dycut = "hybrid",
+                           x_fctr = dat$days, y_fctr = dat$runs, rep_fctr = dat$reps)
+
+# cutreeDynamicの結果
+head(res$dynamic_cut)
+
+# クラスタ別のデータフレーム
+sapply(res$cluster_dat, dim)
+
+# クラスタ別の
+res$gg_mat_all
+res$gg_mat_med
+
+```
+
+### cluster_mine
+- `minerva::mine`の出力を整形, pearsonとspearmanも加える
+```{r}
+# mineを連続実行、結果を整形出力
+res.clm <- cluster_mine(cl_dat = res$cluster_dat)
+
+# 
+lapply(res.clm, function(x)x[1:6,1:6])
+
+```
+
+### matoedge
+```{r}
+# 相関行列のような対称行列から重み付きエッジリストを作成
+edge.list <- matoedge(cor(res$cluster_dat[[1]]))
+head(edge.list)
+
+```
+
+
+
+
 
