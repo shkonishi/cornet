@@ -90,7 +90,7 @@ corheat <- function(dat, distm, clm, method_dycut, draw){
   # dynamicTree cutmethod "tree" or "hybrid" ----
   ## leaf label(tree order) ----
   if(any(length(labels(r_hcl)))){
-    lab <- r_hcl$labels[r_hcl$order]
+    lab <- labels(r_den)
   }else{
     lab <- as.character(1:ncol(dat))
   }
@@ -116,6 +116,7 @@ corheat <- function(dat, distm, clm, method_dycut, draw){
   vcol <- gg_color_hue(length(unique(dyct))) # colours corresponding to clusters
   cols.ccl <- vcol[as.factor(dyct)] # vector of leaf colours
   llab <- split(lab, factor(dyct))
+  side_col <- vcol[factor(dyct[r_hcl$labels])] # side color bar for heatmap
 
 
   # modify dendrogram object with 'dendextend' ----
@@ -124,7 +125,6 @@ corheat <- function(dat, distm, clm, method_dycut, draw){
     r_den <<- dendextend::set(r_den, "by_labels_branches_col", value = x, TF_values = y)
   }
   invisible(mapply(f, llab, vcol))
-
 
   ## set parameter of these branch width, leaf labels color and labels cex to dendrogram object. ----
   r_den <- r_den %>%
@@ -145,8 +145,8 @@ corheat <- function(dat, distm, clm, method_dycut, draw){
       dendrogram = "both", #"none",#"col", #"both",
       Colv=(r_den),
       Rowv=r_den,
-      ColSideColors = cols.ccl,
-      RowSideColors = cols.ccl,
+      ColSideColors = side_col, # sample order
+      RowSideColors = side_col,
       key=TRUE,
       keysize=1,
       symkey=FALSE,

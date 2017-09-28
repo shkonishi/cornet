@@ -1,0 +1,34 @@
+---
+title: "cornet"
+output: github_document
+---
+
+## インストール
+```{r}
+#install.packages("devtools") # もしなければ
+devtools::install_github("shkonishi/cornet")
+```
+
+## 関数及び外部データ一覧
+```{r}
+library(cornet)
+ls("package:cornet")
+```
+
+
+### corheat
+```{r fig.height=10, fig.width=10}
+# data: normalized fpkm
+fp <- system.file("extdata/nfpkm_rnsq.txt", package = "rsko")
+nfpkm <- read.table(fp, header=TRUE, stringsAsFactors = FALSE)
+
+# sampling 200 genes
+set.seed(1)
+dat <- nfpkm[,sample(5:ncol(nfpkm), 200)]
+
+# corheat with dynamic tree cut
+res <- cornet::corheat(dat=dat, distm="spearman", clm="average", 
+                       method_dycut="tree", draw=TRUE)
+
+```
+
