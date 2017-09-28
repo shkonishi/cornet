@@ -3,7 +3,7 @@
 export(cluster_mat)
 export(cluster_mine)
 export(corheat)
-export(mat_to_edge)
+export(matoedge)
 import(dplyr)
 import(ggplot2)
 importFrom(amap,Dist)

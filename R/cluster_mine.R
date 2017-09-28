@@ -1,4 +1,4 @@
-#' The utility of minerva package
+#' The reshape of mine output
 #' @description The result of mine is multi matrix of all node pairs, and that is too many memory usage using big data.
 #'    this program retuns data frame as edge list and atrributes of these edge.
 #' @usage cluster_mine(cl_dat)
@@ -23,14 +23,14 @@ cluster_mine <- function(cl_dat){
   f <- function(x){
     res.mine <-  minerva::mine(x, alpha = 0.6, n.cores = 2) # mine
     # create edge list
-    edge <- cornet::mat_to_edge(res.mine$MIC)[1:2]
-    mic <- cornet::mat_to_edge(res.mine$MIC)[,3] # mic
-    mas <- cornet::mat_to_edge(res.mine$MAS)[,3] # mas
-    mev <- cornet::mat_to_edge(res.mine$MEV)[,3] # mev
-    mcn <- cornet::mat_to_edge(res.mine$MCN)[,3] # mcn
-    micr2 <- cornet::mat_to_edge(res.mine$MICR2)[,3] # micr2
-    gmic <- cornet::mat_to_edge(res.mine$GMIC)[,3] # gmic
-    tic <- cornet::mat_to_edge(res.mine$TIC)[,3] # tic
+    edge <- cornet::matoedge(res.mine$MIC)[1:2]
+    mic <- cornet::matoedge(res.mine$MIC)[,3] # mic
+    mas <- cornet::matoedge(res.mine$MAS)[,3] # mas
+    mev <- cornet::matoedge(res.mine$MEV)[,3] # mev
+    mcn <- cornet::matoedge(res.mine$MCN)[,3] # mcn
+    micr2 <- cornet::matoedge(res.mine$MICR2)[,3] # micr2
+    gmic <- cornet::matoedge(res.mine$GMIC)[,3] # gmic
+    tic <- cornet::matoedge(res.mine$TIC)[,3] # tic
     dat <- data.frame(edge, mic, mas, mev, mcn, micr2, gmic, tic)
     dat <- dat[order(dat$tic, decreasing = T),]
   }

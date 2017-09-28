@@ -2,7 +2,7 @@
 % Please edit documentation in R/cluster_mine.R
 \name{cluster_mine}
 \alias{cluster_mine}
-\title{The utility of minerva package}
+\title{The reshape of mine output}
 \usage{
 cluster_mine(cl_dat)
 }

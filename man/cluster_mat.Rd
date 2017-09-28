@@ -41,10 +41,10 @@ res[[3]] # ggplot object of matplot of all clusters respectively.
 # fp <- system.file("extdata/nfpkm_rnsq.txt", package = "rsko")
 # nfpkm <- read.table(fp, header=TRUE, stringsAsFactors = FALSE)
 
-## dat1: row count remove
-# dat1 <- data.frame(nfpkm[1:3], nfpkm[-1:-3][colSums(nfpkm[-1:-3]) != 0])
+## dat1:
+# dat1 <- nfpkm
 # res1 <- cluster_mat(dat = dat1, distm = "spearman", clm = "average",
-#     column = 4:ncol(dat1), method_dycut = "tree",
+#     column = 5:ncol(dat1), method_dycut = "tree",
 #     y_fctr = dat1$runs, x_fctr = dat1$days, rep_fctr = dat1$reps)
 
 # dat2: no replicate and y_fctr
@@ -57,7 +57,6 @@ res[[3]] # ggplot object of matplot of all clusters respectively.
 ## dat3: no y_fctr
 # dat3 <- nfpkm[nfpkm$runs == 1, -1]
 # dat3 <- data.frame(dat3[1:2], dat3[-1:-2][colSums(dat3[-1:-2]) != 0])
-
 # res3 <- cluster_mat(dat = dat3, distm = "spearman", clm = "average",
 #     column = 3:ncol(dat3), method_dycut = "tree", x_fctr=dat3$days, rep_fctr=dat3$reps)
 }

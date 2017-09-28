@@ -1,13 +1,13 @@
 #' Convert a correlation matrix to a weighted edge list
 #' @description Convert a correlation matrix to a weighted edge list.
 #'     if this matrix is named matrix, these names as node id. Only lower triangled data is used.
-#' @usage mat_to_edge(mat)
+#' @usage matoedge(mat)
 #' @param mat A squared matrix, and lower and upper triangled data to be a same.
 #' @examples
 #' mat <- cor(iris[-5])
-#' mat_to_edge(mat)
+#' matoedge(mat)
 #' @export
-mat_to_edge <- function(mat){
+matoedge <- function(mat){
   # argument check: mat is a squared matrix
   if(nrow(mat) != ncol(mat)){
     stop("This matrix is not squared matrix")
