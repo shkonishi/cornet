@@ -8,6 +8,8 @@
 #' # sample data, result of 'cluster_mat'
 #' @importFrom minerva mine
 #' @importFrom foreach foreach %dopar%
+#' @importFrom parallel makeCluster detectCores stopCluster
+#' @importFrom doParallel registerDoParallel
 #' @export
 cluster_mine <- function(cl_dat){
   # argument check: cl_dat
@@ -36,8 +38,13 @@ cluster_mine <- function(cl_dat){
     dat <- data.frame(edge, mic, mas, mev, mcn, micr2, gmic, tic, pearson=r, spearman=rho)
     dat <- dat[order(dat$tic, decreasing = T),]
   }
+
+  cl <- parallel::makeCluster(parallel::detectCores())
+  doParallel::registerDoParallel(cl)
   x <- NULL
   sum_mine <- foreach::foreach(x = cl_dat) %dopar% {f(x)}
+  parallel::stopCluster(cl)
+
 
   names(sum_mine) <- names(cl_dat)
   return(sum_mine)

@@ -19,23 +19,22 @@ ls("package:cornet")
 ### data
 ```{r}
 # data: normalized fpkm
-fp <- system.file("extdata/nfpkm_rnsq.txt", package = "rsko")
-nfpkm <- read.table(fp, header=TRUE, stringsAsFactors = FALSE)
+fp <- system.file("extdata/nfpkm_200.txt", package = "cornet")
+dat <- read.table(fp, header=TRUE, stringsAsFactors = FALSE)
 
-# sampling 200 genes
-set.seed(1)
-dat <- nfpkm[,c(1:4,sample(5:ncol(nfpkm), 200))]
+# 200 genes
 dat[1:6,1:6]; dim(dat)
 ```
 
 
 ### corheat
-- heatmap書くだけ, 
-- `abspearson`, `squaredpearson`,
+- `abspearson`, `squarepearson`, `pearson`, `spearman`から
 ```{r fig.height=8, fig.width=8}
 # corheat with dynamic tree cut
-cornet::corheat(dat=dat[-1:-4], distm="spearman", clm="average", 
+res <- cornet::corheat(dat=dat[-1:-4], distm="spearman", clm="average", 
                 method_dycut="tree", draw=TRUE)
+
+names(res)
 # cornet::corheat(dat=dat[-1:-4], distm="abspearson", clm="average", 
 #                 method_dycut="tree", draw=TRUE)
 # cornet::corheat(dat=dat[-1:-4], distm="squarepearson", clm="average", 
