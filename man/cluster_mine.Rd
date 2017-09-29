@@ -7,15 +7,18 @@
 cluster_mine(cl_dat)
 }
 \arguments{
-\item{cl_dat}{A list of data frames, result of 'cornet::cluster_mat'}
+\item{cl_dat}{A list of dataframes, result of 'cornet::cluster_mat'}
 }
 \value{
-A list of data frames, result of minerva::mine.
+A list of dataframes, result of minerva::mine soreted by 'TIC'.
 }
 \description{
 The result of mine is multi matrix of all node pairs, and that is too many memory usage using big data.
-   this program retuns data frame as edge list and atrributes of these edge.
+   this program retuns dataframe as edge list and atrributes of these edge.
 }
 \examples{
 # sample data, result of 'cluster_mat'
+data("cluster_dat")
+res <- cluster_mine(cl_dat=cluster_dat[[3]])
+
 }

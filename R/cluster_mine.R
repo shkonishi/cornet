@@ -1,24 +1,23 @@
 #' The reshape of mine output
 #' @description The result of mine is multi matrix of all node pairs, and that is too many memory usage using big data.
-#'    this program retuns data frame as edge list and atrributes of these edge.
+#'    this program retuns dataframe as edge list and atrributes of these edge.
 #' @usage cluster_mine(cl_dat)
-#' @return A list of data frames, result of minerva::mine.
-#' @param cl_dat A list of data frames, result of 'cornet::cluster_mat'
+#' @return A list of dataframes, result of minerva::mine soreted by 'TIC'.
+#' @param cl_dat A list of dataframes, result of 'cornet::cluster_mat'
 #' @examples
 #' # sample data, result of 'cluster_mat'
+#' data("cluster_dat")
+#' res <- cluster_mine(cl_dat=cluster_dat[[3]])
+#'
 #' @importFrom minerva mine
-#' @importFrom foreach foreach %dopar%
+#' @importFrom foreach foreach %dopar% %do%
 #' @importFrom parallel makeCluster detectCores stopCluster
 #' @importFrom doParallel registerDoParallel
 #' @export
 cluster_mine <- function(cl_dat){
-  # argument check: cl_dat
-  if(class(cl_dat)=="list"){
-    loops <- seq_along(cl_dat)
-  } else if (class(cl_dat)=="data.frame"){
-    loops <- 1
-  } else {
-    stop("'cl_dat' is a list of multi data frame, or a data frame")
+  # argument check ----
+  if(class(cl_dat) != "list" & class(cl_dat) != "data.frame"){
+    stop("'cl_dat' is a dataframe or a list of multiple datafrme.")
   }
 
   # parse result of minerva::mine ----
@@ -39,13 +38,16 @@ cluster_mine <- function(cl_dat){
     dat <- dat[order(dat$tic, decreasing = T),]
   }
 
-  cl <- parallel::makeCluster(parallel::detectCores())
-  doParallel::registerDoParallel(cl)
-  x <- NULL
-  sum_mine <- foreach::foreach(x = cl_dat) %dopar% {f(x)}
-  parallel::stopCluster(cl)
+  if (class(cl_dat) == "list" & all(sapply(cl_dat, class)== "data.frame")){
+    cl <- parallel::makeCluster(parallel::detectCores())
+    doParallel::registerDoParallel(cl)
+    x <- NULL
+    sum_mine <- foreach::foreach(x = cl_dat) %dopar% {f(x)}
+    parallel::stopCluster(cl)
+    names(sum_mine) <- names(cl_dat)
+  } else {
+    sum_mine <- f(cl_dat)
+  }
 
-
-  names(sum_mine) <- names(cl_dat)
   return(sum_mine)
 }

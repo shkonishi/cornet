@@ -90,7 +90,7 @@ cluster_mat <- function(dat, distm, clm, column, method_dycut, y_fctr, x_fctr, r
   f <- function(x, y){
     r_den <<- dendextend::set(r_den, "by_labels_branches_col", value = x, TF_values = y)
   }
-  system.time(invisible(mapply(f, llab, vcol))) #1.5
+  invisible(mapply(f, llab, vcol))
 
   # barplot cluster side bar ----
   ## graph layout
