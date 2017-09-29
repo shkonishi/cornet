@@ -4,8 +4,8 @@ output: github_document
 ---
 
 ## インストール
-```{r}
-#install.packages("devtools") # もしなければ
+```{r eval=FALSE}
+install.packages("devtools") 
 devtools::install_github("shkonishi/cornet")
 ```
 
@@ -32,7 +32,7 @@ dat[1:6,1:6]; dim(dat)
 - 別手法で作成した距離行列を`as.dist`で変換したdistオブジェクトでも良い
 ```{r}
 res <- cornet::cluster_mat(dat = dat, distm = "spearman", clm = "average",
-                           column = 5:ncol(dat), method_dycut = "hybrid",
+                           column = 5:ncol(dat), method_dycut = "tree",
                            x_fctr = dat$days, y_fctr = dat$runs, rep_fctr = dat$reps)
 
 # cutreeDynamicの結果
@@ -53,7 +53,6 @@ res$gg_mat_med
 # mineを連続実行、結果を整形出力
 res.clm <- cluster_mine(cl_dat = res$cluster_dat)
 
-# 
 lapply(res.clm, function(x)x[1:6,])
 
 ```

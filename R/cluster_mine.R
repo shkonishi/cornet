@@ -44,6 +44,7 @@ cluster_mine <- function(cl_dat){
     x <- NULL
     sum_mine <- foreach::foreach(x = cl_dat) %dopar% {f(x)}
     parallel::stopCluster(cl)
+
     names(sum_mine) <- names(cl_dat)
   } else {
     sum_mine <- f(cl_dat)
