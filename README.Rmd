@@ -27,21 +27,6 @@ dat[1:6,1:6]; dim(dat)
 ```
 
 
-### corheat
-- `abspearson`, `squarepearson`, `pearson`, `spearman`から
-```{r fig.height=8, fig.width=8}
-# corheat with dynamic tree cut
-res <- cornet::corheat(dat=dat[-1:-4], distm="spearman", clm="average", 
-                method_dycut="tree", draw=TRUE)
-
-names(res)
-# cornet::corheat(dat=dat[-1:-4], distm="abspearson", clm="average", 
-#                 method_dycut="tree", draw=TRUE)
-# cornet::corheat(dat=dat[-1:-4], distm="squarepearson", clm="average", 
-#                 method_dycut="tree", draw=TRUE)
-
-```
-
 ### cluster_mat
 - `amap::Dist`のメソッドから距離定義を選択
 - 別手法で作成した距離行列を`as.dist`で変換したdistオブジェクトでも良い
@@ -69,7 +54,7 @@ res$gg_mat_med
 res.clm <- cluster_mine(cl_dat = res$cluster_dat)
 
 # 
-lapply(res.clm, function(x)x[1:6,1:6])
+lapply(res.clm, function(x)x[1:6,])
 
 ```
 
