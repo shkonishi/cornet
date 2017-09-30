@@ -4,7 +4,7 @@
 \alias{cluster_mat}
 \title{Cluster_mat}
 \usage{
-cluster_mat(dat, distm, clm, column, method_dycut, y_fctr, x_fctr, rep_fctr)
+cluster_mat(dat, distm, clm, column, method_dycut, y_fctr, x_fctr, rep_fctr, ...)
 }
 \arguments{
 \item{dat}{data frame or matrix}
@@ -22,6 +22,8 @@ cluster_mat(dat, distm, clm, column, method_dycut, y_fctr, x_fctr, rep_fctr)
 \item{x_fctr}{x-axis factor for ggplot object like matplot}
 
 \item{rep_fctr}{optional}
+
+\item{...}{additional dynamicTreeCut::cutreeDynamic options}
 }
 \description{
 Cluster_mat
@@ -35,10 +37,9 @@ res[[1]] # hclust object
 res[[2]] # result of dynamic cut object
 res[[3]] # ggplot object of matplot of all clusters respectively.
 
-
 ##  The following examples takes too much times
 # sample data
-# fp <- system.file("extdata/nfpkm_rnsq.txt", package = "rsko")
+# fp <- system.file("extdata/nfpkm_rnsq.txt", package = "cornet")
 # nfpkm <- read.table(fp, header=TRUE, stringsAsFactors = FALSE)
 
 ## dat1:

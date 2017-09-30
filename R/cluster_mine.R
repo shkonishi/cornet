@@ -34,7 +34,7 @@ cluster_mine <- function(cl_dat){
     tic <- cornet::matoedge(res.mine$TIC)[,3] # tic
     r <- cornet::matoedge(cor(x, method="pearson"))[,3]
     rho <- cornet::matoedge(cor(x, method="spearman"))[,3]
-    dat <- data.frame(edge, mic, mas, mev, mcn, micr2, gmic, tic, pearson=r, spearman=rho)
+    dat <- data.frame(edge, mic, mas, mev, mcn, micr2, gmic, tic, pearson=r, spearman=rho, row.names = NULL)
     dat <- dat[order(dat$tic, decreasing = T),]
   }
 

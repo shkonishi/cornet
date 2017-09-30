@@ -1,6 +1,6 @@
 #' Cluster_mat
 #' @description Cluster_mat
-#' @usage cluster_mat(dat, distm, clm, column, method_dycut, y_fctr, x_fctr, rep_fctr)
+#' @usage cluster_mat(dat, distm, clm, column, method_dycut, y_fctr, x_fctr, rep_fctr, ...)
 #' @param dat data frame or matrix
 #' @param distm distance measure from amap::Dist
 #' @param clm hclust methods
@@ -9,6 +9,7 @@
 #' @param x_fctr x-axis factor for ggplot object like matplot
 #' @param y_fctr optional
 #' @param rep_fctr optional
+#' @param ... additional dynamicTreeCut::cutreeDynamic options
 #' @examples
 #' d <- data.frame(t(iris[-5]))
 #' xfctr <- factor(names(iris[-5]), levels = names(iris[-5]))
@@ -48,7 +49,7 @@
 #' @importFrom graphics barplot layout layout.show par plot text
 #' @importFrom stats sd hclust as.dendrogram median
 #' @export
-cluster_mat <- function(dat, distm, clm, column, method_dycut, y_fctr, x_fctr, rep_fctr){
+cluster_mat <- function(dat, distm, clm, column, method_dycut, y_fctr, x_fctr, rep_fctr, ...){
 
   if (class(dat)=="data.frame"){
     mat <- dat[column]
@@ -64,9 +65,9 @@ cluster_mat <- function(dat, distm, clm, column, method_dycut, y_fctr, x_fctr, r
 
   # method tree  method hybrid ----
   if (method_dycut=="tree"){
-    dyct <- dynamicTreeCut::cutreeDynamic(dendro = r_hcl, method = method_dycut )
+    dyct <- dynamicTreeCut::cutreeDynamic(dendro = r_hcl, method = method_dycut, ... )
   } else if (method_dycut=="hybrid"){
-    dyct <- dynamicTreeCut::cutreeDynamic(dendro = r_hcl, distM = as.matrix(dis.mat), method = method_dycut )
+    dyct <- dynamicTreeCut::cutreeDynamic(dendro = r_hcl, distM = as.matrix(dis.mat), method = method_dycut, ... )
   } else {
     stop("cut height still be deveropping")
   }
@@ -282,7 +283,7 @@ cluster_mat <- function(dat, distm, clm, column, method_dycut, y_fctr, x_fctr, r
   }
 
   # data shaping
-  return(list(hclust_obj = r_hcl, dynamic_cut=dyct, cluster_dat = cl_dat,
+  return(list(hclust_obj = r_hcl, dend_obj = r_den, dynamic_cut=dyct, cluster_dat = cl_dat,
               gg_mat_all = ggmat, gg_mat_med = ggmat2))
 
 }

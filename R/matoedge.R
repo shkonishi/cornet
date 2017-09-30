@@ -24,7 +24,8 @@ matoedge <- function(mat, diag = FALSE){
     } else {
       x_id=rownames(mat)[bit[,1]]; y_id=rownames(mat)[bit[,2]]
     }
-    data.frame(x_id, y_id, value = mat[lower.tri(mat)])
+    d <- data.frame(x_id, y_id, value = mat[lower.tri(mat)])
+    d[d$value != 0,]
 
   }else{
     bit <- cbind(rep(1:nrow(mat), nrow(mat):1),
@@ -35,7 +36,8 @@ matoedge <- function(mat, diag = FALSE){
     } else {
       x_id=rownames(mat)[bit[,1]]; y_id=rownames(mat)[bit[,2]]
     }
-    data.frame(x_id, y_id, value = mat[lower.tri(mat, diag = T)])
+    d <- data.frame(x_id, y_id, value = mat[lower.tri(mat, diag = T)])
+    d[d$value != 0,]
 
   }
 
