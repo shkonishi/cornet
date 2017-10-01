@@ -17,10 +17,12 @@ library(cornet)
 ls("package:cornet")
 ```
 
-    ## [1] "cluster_dat"  "cluster_mat"  "cluster_mine" "corheat"     
-    ## [5] "matoedge"
+    ## [1] "cluster_dat"  "cluster_mat"  "cluster_mine" "corgraph"    
+    ## [5] "corheat"      "matoedge"
 
 ### data
+
+-   正規化した遺伝子発現データ(行:遺伝子, 列:サンプル)
 
 ``` r
 # data: normalized fpkm
@@ -47,7 +49,7 @@ dat[1:6,1:6]; dim(dat)
 -   別手法で作成した距離行列を`as.dist`で変換したdistオブジェクトでも良い
 
 ``` r
-res <- cornet::cluster_mat(dat = dat, distm = "spearman", clm = "average",
+res.clm <- cornet::cluster_mat(dat = dat, distm = "spearman", clm = "average",
                            column = 5:ncol(dat), method_dycut = "tree",
                            x_fctr = dat$days, y_fctr = dat$runs, rep_fctr = dat$reps)
 ```
@@ -56,7 +58,7 @@ res <- cornet::cluster_mat(dat = dat, distm = "spearman", clm = "average",
 
 ``` r
 # cutreeDynamicの結果
-head(res$dynamic_cut)
+head(res.clm$dynamic_cut)
 ```
 
     ## gene266 gene372 gene572 gene906 gene201 gene894 
@@ -64,114 +66,133 @@ head(res$dynamic_cut)
 
 ``` r
 # クラスタ別のデータフレーム
-sapply(res$cluster_dat, dim)
+sapply(res.clm$cluster_dat, dim)
 ```
 
-    ##        1   3   0   2
+    ##        0   1   3   2
     ## [1,] 108 108 108 108
-    ## [2,]  87  31  28  54
+    ## [2,]  28  87  31  54
 
 ``` r
-# クラスタ別の
-res$gg_mat_all
+# クラスタ別のplot
+res.clm$gg_mat_all
 ```
 
 ![](README_files/figure-markdown_github-ascii_identifiers/unnamed-chunk-4-2.png)
 
 ``` r
-res$gg_mat_med
+res.clm$gg_mat_med
 ```
 
 ![](README_files/figure-markdown_github-ascii_identifiers/unnamed-chunk-4-3.png)
 
+### matoedge
+
+-   相関行列のような対称行列から重み付きエッジリスト(完全グラフ)を作成
+
+``` r
+# 相関行列のような対称行列から重み付きエッジリストを作成
+edge.list <- matoedge(cor(res.clm$cluster_dat[[1]]))
+head(edge.list)
+```
+
+    ##     x_id    y_id        value
+    ## 1 gene54 gene442  0.364463358
+    ## 2 gene54 gene222  0.262606491
+    ## 3 gene54 gene568 -0.005069097
+    ## 4 gene54 gene925  0.105762776
+    ## 5 gene54 gene454  0.086375472
+    ## 6 gene54 gene694  0.164309172
+
+#### corgraph
+
+-   相関行列から自動的に閾値を指定してエッジリストを作成する
+-   igraphオブジェクト, エッジリスト, ks-testの結果が返る
+-   エッジリストには相関係数が属性値の列として加えられている(負の相関の情報はここから取る
+-   逆相関のエッジも含めてグラフ作成する場合は、クラスタリングの時に`abspearson`とかを使う
+
+``` r
+# サンプルデータ
+data(cluster_dat)
+
+# 相関係数行列
+cormat <- cor(cluster_dat[[1]])
+
+# グラフ作成
+res <- corgraph(mat = cormat)
+
+# 返り値1. igraphオブジェクト
+(g <- res$undir.graph)
+```
+
+    ## IGRAPH e11306c UN-- 120 1605 -- 
+    ## + attr: name (v/c)
+    ## + edges from e11306c (vertex names):
+    ##  [1] gene158--gene838 gene765--gene118 gene765--gene871 gene765--gene189
+    ##  [5] gene765--gene818 gene838--gene118 gene686--gene770 gene910--gene271
+    ##  [9] gene910--gene416 gene910--gene278 gene910--gene254 gene271--gene510
+    ## [13] gene416--gene510 gene510--gene281 gene271--gene416 gene271--gene278
+    ## [17] gene271--gene964 gene271--gene281 gene271--gene971 gene416--gene278
+    ## [21] gene416--gene281 gene563--gene270 gene563--gene246 gene563--gene920
+    ## [25] gene278--gene563 gene563--gene67  gene563--gene371 gene190--gene220
+    ## [29] gene270--gene190 gene220--gene709 gene220--gene977 gene270--gene220
+    ## + ... omitted several edges
+
+``` r
+# 返り値2. エッジリスト
+head(res$edge.list)
+```
+
+    ##         x_id    y_id     value
+    ## 2567 gene158 gene838 0.9323359
+    ## 3017 gene765 gene118 0.9422020
+    ## 3187 gene765 gene871 0.9342737
+    ## 3188 gene765 gene189 0.9582303
+    ## 3189 gene765 gene818 0.9388109
+    ## 3242 gene118 gene838 0.9547732
+
+``` r
+# 返り値3. ks-testの結果
+head(res$res.ks.text)
+```
+
+    ##   thresh      ks_d ks_p
+    ## 1   0.30 0.8985904    0
+    ## 2   0.31 0.8974663    0
+    ## 3   0.32 0.8897840    0
+    ## 4   0.33 0.8951993    0
+    ## 5   0.34 0.8865022    0
+    ## 6   0.35 0.8853600    0
+
 ### cluster\_mine
 
--   `minerva::mine`の出力を整形, pearsonとspearmanも加える
+-   非線形の関連を見つける。
+-   `minerva::mine`の出力を整形, pearsonとspearmanも加えたdataframeを返す
 
 ``` r
 # mineを連続実行、結果を整形出力
-res.clm <- cluster_mine(cl_dat = res$cluster_dat)
+res.mic <- cluster_mine(cl_dat = res.clm$cluster_dat)
 
-# 
-lapply(res.clm, function(x)x[1:6,])
+# 結果を一部表示
+lapply(res.mic[c(2,4)], function(x)x[1:3,])
 ```
 
     ## $`1`
-    ##         x_id    y_id mic        mas mev      mcn      micr2      gmic
-    ## 3714 gene204 gene655   1 0.03285807   1 2.000000 0.05284526 1.0000000
-    ## 3738  gene67 gene519   1 0.01908699   1 3.000000 0.05036932 0.9935214
-    ## 3731 gene179 gene519   1 0.04402342   1 3.000000 0.06798504 0.9942813
-    ## 3732 gene789  gene67   1 0.04047976   1 3.584963 0.05791981 0.9806749
-    ## 3728 gene179  gene67   1 0.01189086   1 3.000000 0.09046485 0.9930227
-    ## 3737  gene67 gene371   1 0.09622638   1 3.000000 0.02788684 0.9865954
-    ##           tic   pearson  spearman
-    ## 3714 18.12556 0.9732188 0.9794221
-    ## 3738 17.94552 0.9744900 0.9627502
-    ## 3731 17.61939 0.9654092 0.9593205
-    ## 3732 17.51823 0.9706082 0.9639506
-    ## 3728 17.49004 0.9536955 0.9626930
-    ## 3737 17.36597 0.9859580 0.9648080
-    ## 
-    ## $`3`
-    ##        x_id    y_id       mic        mas       mev      mcn      micr2
-    ## 133 gene698 gene380 0.7878513 0.08065127 0.7878513 2.584963 0.14646347
-    ## 438 gene380 gene132 0.7558046 0.13125066 0.7558046 2.584963 0.06480325
-    ## 134 gene698 gene132 0.7189312 0.06435604 0.7189312 2.584963 0.05946409
-    ## 31  gene826  gene62 0.7056530 0.04210850 0.7056530 2.584963 0.06088894
-    ## 80   gene62 gene380 0.6711388 0.05596903 0.6711388 2.584963 0.07683509
-    ## 88  gene266 gene698 0.7124452 0.16418719 0.7124452 2.584963 0.05858157
-    ##          gmic       tic    pearson   spearman
-    ## 133 0.7074252 11.867889 -0.8008670 -0.8240114
-    ## 438 0.6789852 11.021268  0.8312649  0.8333095
-    ## 134 0.6274129 10.673320 -0.8120758 -0.7986891
-    ## 31  0.6211462 10.319357  0.8029720  0.6412873
-    ## 80  0.5832082  9.912205 -0.7709110 -0.7772633
-    ## 88  0.6230904  9.821684  0.8086183  0.8068250
-    ## 
-    ## $`0`
-    ##        x_id    y_id       mic        mas       mev      mcn      micr2
-    ## 259 gene331 gene485 0.6061471 0.02817255 0.6061471 2.000000 0.18818752
-    ## 227 gene754 gene331 0.5795805 0.03755272 0.5795805 2.000000 0.17060362
-    ## 226 gene754 gene944 0.5517252 0.05668312 0.5517252 2.000000 0.04258118
-    ## 373 gene958 gene241 0.5642428 0.08287044 0.5642428 2.000000 0.11962117
-    ## 244 gene944 gene485 0.5685831 0.07183381 0.5685831 2.584963 0.10390175
-    ## 228 gene754 gene485 0.5377324 0.14018524 0.5377324 2.000000 0.03607627
-    ##          gmic      tic   pearson  spearman
-    ## 259 0.5296532 8.852612 0.6464979 0.7024589
-    ## 227 0.5013204 8.207523 0.6395130 0.7129288
-    ## 226 0.4767254 8.033038 0.7135433 0.7166157
-    ## 373 0.4690225 7.565197 0.6667995 0.6806330
-    ## 244 0.4354489 7.338720 0.6816754 0.6876542
-    ## 228 0.4733235 7.324082 0.7082768 0.6938847
+    ##         x_id    y_id mic        mas mev mcn      micr2      gmic      tic
+    ## 3714 gene204 gene655   1 0.03285807   1   2 0.05284526 1.0000000 18.12556
+    ## 3738  gene67 gene519   1 0.01908699   1   3 0.05036932 0.9935214 17.94552
+    ## 3731 gene179 gene519   1 0.04402342   1   3 0.06798504 0.9942813 17.61939
+    ##        pearson  spearman
+    ## 3714 0.9732188 0.9794221
+    ## 3738 0.9744900 0.9627502
+    ## 3731 0.9654092 0.9593205
     ## 
     ## $`2`
     ##         x_id    y_id       mic        mas       mev      mcn       micr2
     ## 1280 gene850 gene558 0.9744918 0.02346228 0.9744918 3.807355 0.008202131
     ## 1296 gene491 gene558 1.0000000 0.01791730 1.0000000 4.000000 0.059638626
     ## 1279 gene850 gene491 0.9744918 0.06201446 0.9744918 3.321928 0.052296549
-    ## 981  gene507 gene558 1.0000000 0.09008929 1.0000000 3.000000 0.250265011
-    ## 1109 gene572 gene900 1.0000000 0.03026810 1.0000000 3.584963 0.141137013
-    ## 1245 gene651 gene558 1.0000000 0.03673405 1.0000000 4.000000 0.123150137
     ##           gmic      tic   pearson  spearman
     ## 1280 0.9343362 17.28197 0.9830003 0.9613498
     ## 1296 0.9452102 16.93374 0.9697223 0.9770309
     ## 1279 0.9407437 16.76802 0.9603100 0.9584441
-    ## 981  0.9935214 16.48217 0.8658724 0.8620424
-    ## 1109 0.9611421 16.45482 0.9267486 0.8917850
-    ## 1245 0.9404114 16.26148 0.9364026 0.9300066
-
-### matoedge
-
-``` r
-# 相関行列のような対称行列から重み付きエッジリストを作成
-edge.list <- matoedge(cor(res$cluster_dat[[1]]))
-head(edge.list)
-```
-
-    ##      x_id    y_id       value
-    ## 1 gene478 gene315 0.371799358
-    ## 2 gene478 gene438 0.216129367
-    ## 3 gene478 gene324 0.419083487
-    ## 4 gene478 gene707 0.077285184
-    ## 5 gene478  gene23 0.009250348
-    ## 6 gene478 gene200 0.200931931

@@ -13,7 +13,7 @@ cluster_mat(dat, distm, clm, column, method_dycut, y_fctr, x_fctr, rep_fctr, ...
 
 \item{clm}{hclust methods}
 
-\item{column}{column which containing expression data}
+\item{column}{column which containing expression data default 'column=1:ncol(dat)'}
 
 \item{method_dycut}{method of dynamic cut}
 

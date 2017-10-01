@@ -1,15 +1,16 @@
 #' Convert a correlation matrix to a weighted edge list
 #' @description Convert a correlation matrix to a weighted edge list from lower triangled data.
 #'     if this matrix is named matrix, these names as node id.
-#' @usage matoedge(mat, diag)
+#' @usage matoedge(mat, diag, zero.weight)
 #' @param mat A squared matrix, and lower and upper triangled data to be a same.
 #' @param diag default, FALSE
+#' @param zero.weight default, FALSE
 #' @examples
 #' mat <- cor(iris[-5])
 #' matoedge(mat = mat)
 #' matoedge(mat = mat, diag = TRUE)
 #' @export
-matoedge <- function(mat, diag = FALSE){
+matoedge <- function(mat, diag = FALSE, zero.weight = FALSE){
   # argument check: mat is a squared matrix
   if(nrow(mat) != ncol(mat)){
     stop("This matrix is not squared matrix")
@@ -25,7 +26,7 @@ matoedge <- function(mat, diag = FALSE){
       x_id=rownames(mat)[bit[,1]]; y_id=rownames(mat)[bit[,2]]
     }
     d <- data.frame(x_id, y_id, value = mat[lower.tri(mat)])
-    d[d$value != 0,]
+    if(zero.weight==FALSE){ d[d$value != 0,] } else if (zero.weight==TRUE){d}
 
   }else{
     bit <- cbind(rep(1:nrow(mat), nrow(mat):1),
@@ -37,7 +38,7 @@ matoedge <- function(mat, diag = FALSE){
       x_id=rownames(mat)[bit[,1]]; y_id=rownames(mat)[bit[,2]]
     }
     d <- data.frame(x_id, y_id, value = mat[lower.tri(mat, diag = T)])
-    d[d$value != 0,]
+    if(zero.weight==FALSE){ d[d$value != 0,] } else if (zero.weight==TRUE){d}
 
   }
 

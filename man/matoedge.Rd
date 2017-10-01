@@ -4,12 +4,14 @@
 \alias{matoedge}
 \title{Convert a correlation matrix to a weighted edge list}
 \usage{
-matoedge(mat, diag)
+matoedge(mat, diag, zero.weight)
 }
 \arguments{
 \item{mat}{A squared matrix, and lower and upper triangled data to be a same.}
 
 \item{diag}{default, FALSE}
+
+\item{zero.weight}{default, FALSE}
 }
 \description{
 Convert a correlation matrix to a weighted edge list from lower triangled data.

@@ -2,7 +2,7 @@
 
 export(cluster_mat)
 export(cluster_mine)
-export(coredge)
+export(corgraph)
 export(corheat)
 export(matoedge)
 import(dplyr)

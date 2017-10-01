@@ -78,7 +78,7 @@ corheat <- function(dat, distm, clm, method_dycut, draw){
     r_den <- dendextend::hang.dendrogram(as.dendrogram(r_hcl))
 
   } else {
-    stop('Select a distance measure form c(\"squarepearson\", \"pearson\", \"abspearson\") ')
+    stop('Select a distance measure form c(\"squarepearson\", \"pearson\", \"abspearson\", \"spearman\") ')
   }
 
   # dynamic cut  method "tree", "hybrid" ----
@@ -143,7 +143,7 @@ corheat <- function(dat, distm, clm, method_dycut, draw){
       col=rev(heat.colors(256)), # bluered(256), rev(heat.colors(256))
       scale="none", #"row", "Column", "both", "none"
       dendrogram = "both", #"none",#"col", #"both",
-      Colv=(r_den),
+      Colv=r_den,
       Rowv=r_den,
       ColSideColors = side_col, # sample order
       RowSideColors = side_col,

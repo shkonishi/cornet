@@ -1,6 +1,6 @@
 #' Construction of a network graph from correlation matxix
 #' @description  Construction of a correlation network graph from correlation matrix through Random Matrix Theory-based methods.
-#' @usage coredge(mat, it = seq(0.30,0.99,by=0.01))
+#' @usage corgraph(mat, it = seq(0.30,0.99,by=0.01))
 #' @return A list consists from one igraph object and two dataframes. The one is a weighted edge list, the another one is
 #'     a result from ks-test of difference eigen sequence based on thresh correlation matrix.
 #' @param mat correlation matrix
@@ -9,13 +9,13 @@
 #' # sample data
 #' data(cluster_dat)
 #' cormat <- cor(cluster_dat[[2]])
-#' res <- coredge(mat = cormat)
+#' res <- corgraph(mat = cormat)
 #' res[[1]]
 #' head(res[[2]])
 #' head(res[[3]])
 #' @importFrom igraph graph.edgelist
 #' @export
-coredge <- function(mat, it = seq(0.30,0.99,by=0.01)){
+corgraph <- function(mat, it = seq(0.30,0.99,by=0.01)){
   diag(mat) <- 0
   mtx <- abs(mat)
   res.ks <- lapply(it,
@@ -27,9 +27,9 @@ coredge <- function(mat, it = seq(0.30,0.99,by=0.01)){
                      if(mean_diff_eigenvalue > 0){
                        diff_eigenvalue <- diff_eigenvalue / mean_diff_eigenvalue
                        # calc. Kolmogorov-Smirnov distance
-                       suppressWarnings(res.ks <- stats::ks.test(diff_eigenvalue,"pexp"))
-                     }
-                     return(unlist(res.ks)[1:2])
+                       res.ks <- suppressWarnings(stats::ks.test(diff_eigenvalue,"pexp"))
+                       unlist(res.ks)[1:2]
+                     }else{ NA }
                    }
   )
   res.ks.dat <- data.frame(thresh = it,

@@ -4,7 +4,7 @@
 #' @param dat data frame or matrix
 #' @param distm distance measure from amap::Dist
 #' @param clm hclust methods
-#' @param column column which containing expression data
+#' @param column column which containing expression data default 'column=1:ncol(dat)'
 #' @param method_dycut method of dynamic cut
 #' @param x_fctr x-axis factor for ggplot object like matplot
 #' @param y_fctr optional
@@ -49,7 +49,7 @@
 #' @importFrom graphics barplot layout layout.show par plot text
 #' @importFrom stats sd hclust as.dendrogram median
 #' @export
-cluster_mat <- function(dat, distm, clm, column, method_dycut, y_fctr, x_fctr, rep_fctr, ...){
+cluster_mat <- function(dat, distm, clm, column=1:ncol(dat), method_dycut, y_fctr, x_fctr, rep_fctr, ...){
   # argument check: dat
   if (class(dat)=="data.frame"){
     mat <- dat[column]
@@ -78,15 +78,19 @@ cluster_mat <- function(dat, distm, clm, column, method_dycut, y_fctr, x_fctr, r
   dyct.lo <- dyct[r_hcl$order]
 
   # draw dendrogram with cluster -----
-  ## cluster colour, cluster number, leaf colour
+  ## cluster colour, cluster number
   gg_color_hue <- function(n) {
     hues = seq(15, 375, length = n + 1)
     hcl(h = hues, l = 65, c = 100)[1:n]
   }
-  vcol <- gg_color_hue(length(unique(dyct)))
+  if(any(unique(dyct) == 0)){
+    vcol =c("grey50",gg_color_hue(length(unique(dyct)) -1))
+    cl_levels <- c(0, unique(dyct.lo)[!unique(dyct.lo) %in% 0])
 
-  ## cluster level
-  cl_levels <- unique(dyct.lo)
+  }else{
+    vcol <- gg_color_hue(length(unique(dyct)))
+    cl_levels <- unique(dyct.lo)
+  }
 
   ## leaf colour(sample order for side bar colour)  &
   leaf_col_so <- vcol[factor(dyct, levels=cl_levels)] # leaf col (sample order)
@@ -114,14 +118,18 @@ cluster_mat <- function(dat, distm, clm, column, method_dycut, y_fctr, x_fctr, r
 
   ## cluster side bar ----
   par(mar=c(0,2,2,0))
-  cl_txt <- as.character(cl_levels) # number of cluster elements
+  ## number of cluster elements
+  cl_txt <- if(any(cl_levels==0)){
+    as.character(cl_levels[cl_levels!=0])
+    }else{
+      as.character(cl_levels)
+      }
   cl_num <- table(dyct.lo)[cl_txt] # cluster number table
   cl_txt_al <- rep(NA, length(dyct)) # text on color side bar
-  cl_txt_al[ceiling(cumsum(cl_num)-cl_num/2)] <- cl_txt
+  cl_txt_al[match(cl_txt, dyct.lo) + ceiling(cl_num/2)] <- cl_txt
   bp <- graphics::barplot(rep(1, length(leaf_col_lo)), yaxt="n", border = leaf_col_lo, col=leaf_col_lo)
   graphics::text(bp, y = 0.5, labels = cl_txt_al, col="white")
   par(def.par) # reset to default
-
 
   # matplot ----
   ## z-conversion ----
@@ -162,7 +170,7 @@ cluster_mat <- function(dat, distm, clm, column, method_dycut, y_fctr, x_fctr, r
 
     ## plot all genes belogs to a cluster. ----
     ggmat <- ggplot2::ggplot(gg_dat, ggplot2::aes(x=x_fctr, y=value, group=genes)) +
-      ggplot2::geom_line(alpha=0.3) +
+      ggplot2::geom_line(alpha=0.3, linetype=3) +
       ggplot2::facet_wrap(~cl, ncol=3)
 
     ## plot median of all genes belogs to a cluster. ----
@@ -191,7 +199,7 @@ cluster_mat <- function(dat, distm, clm, column, method_dycut, y_fctr, x_fctr, r
 
     ## plot all genes belogs to a cluster ----
     ggmat <- ggplot2::ggplot(gg_dat, ggplot2::aes(x=x_fctr, y=value, group=genes)) +
-      ggplot2::geom_line(alpha=0.2) +
+      ggplot2::geom_line(alpha=0.5, linetype=3) +
       ggplot2::facet_wrap(~cl, ncol=3)
 
     ## plot median of all genes belogs to a cluster. ----
@@ -224,7 +232,7 @@ cluster_mat <- function(dat, distm, clm, column, method_dycut, y_fctr, x_fctr, r
 
     ## plot all genes belogs to a cluster ----
     ggmat <- ggplot2::ggplot(gg_dat, ggplot2::aes(x=x_fctr, y=value, group=genes)) +
-      ggplot2::geom_line(alpha=0.2) +
+      ggplot2::geom_line(alpha=0.5, linetype=3) +
       ggplot2::facet_wrap(~cl, ncol=3)
 
     ## plot median of all genes belogs to a cluster. ----
@@ -263,14 +271,14 @@ cluster_mat <- function(dat, distm, clm, column, method_dycut, y_fctr, x_fctr, r
       arrange(genes)
 
     ## plot all genes belogs to a cluster.----
-    if(length(cl_num)%%2 == 0){
+    if(length(cl_levels)%%2 == 0){
       fct_col <- 2
     }else{
         fct_col <- 3
       }
     ggmat <- ggplot2::ggplot(gg_dat,
                 ggplot2::aes(x=x_fctr, y=value, colour=y_fctr, group=interaction(genes, y_fctr))) +
-      ggplot2::geom_line(alpha=0.2) +
+      ggplot2::geom_line(alpha=0.5, linetype=3) +
       ggplot2::theme_bw() +
       ggplot2::facet_wrap(~cl, ncol=fct_col)
 
