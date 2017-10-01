@@ -53,6 +53,9 @@ res.clm <- cluster_mat(dat = dat, distm = "spearman", clm = "average",
                            x_fctr = dat$days, y_fctr = dat$runs, rep_fctr = dat$reps)
 ```
 
+    ##  ..cutHeight not given, setting it to 268000  ===>  99% of the (truncated) height range in dendro.
+    ##  ..done.
+
 ![](README_files/figure-markdown_github-ascii_identifiers/unnamed-chunk-4-1.png)
 
 ``` r
@@ -124,9 +127,9 @@ res <- corgraph(mat = cormat)
 (g <- res$undir.graph)
 ```
 
-    ## IGRAPH 08265fe UN-- 120 1605 -- 
+    ## IGRAPH bdd1839 UN-- 120 1605 -- 
     ## + attr: name (v/c)
-    ## + edges from 08265fe (vertex names):
+    ## + edges from bdd1839 (vertex names):
     ##  [1] gene158--gene838 gene765--gene118 gene765--gene871 gene765--gene189
     ##  [5] gene765--gene818 gene838--gene118 gene686--gene770 gene910--gene271
     ##  [9] gene910--gene416 gene910--gene278 gene910--gene254 gene271--gene510
