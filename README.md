@@ -45,11 +45,10 @@ dat[1:6,1:6]; dim(dat)
 
 ### cluster\_mat
 
--   `amap::Dist`のメソッドから距離定義を選択
--   別手法で作成した距離行列を`as.dist`で変換したdistオブジェクトでも良い
+遺伝子のクラスタリングを行い、`dynamicTreeCut::cutreeDynamicTree`を用いてクラスタを検出する。クラスタごとのdataframe等を返す。 - `amap::Dist`のメソッドから距離定義を選択する。別手法で作成した距離行列を`as.dist`で変換したdistオブジェクトでも良い。
 
 ``` r
-res.clm <- cornet::cluster_mat(dat = dat, distm = "spearman", clm = "average",
+res.clm <- cluster_mat(dat = dat, distm = "spearman", clm = "average",
                            column = 5:ncol(dat), method_dycut = "tree",
                            x_fctr = dat$days, y_fctr = dat$runs, rep_fctr = dat$reps)
 ```
@@ -92,7 +91,7 @@ res.clm$gg_mat_med
 
 ``` r
 # 相関行列のような対称行列から重み付きエッジリストを作成
-edge.list <- matoedge(cor(res.clm$cluster_dat[[1]]))
+edge.list <- matoedge(cor(res.clm$cluster_dat[[1]]), diag = F, zero.weight = F)
 head(edge.list)
 ```
 
@@ -125,9 +124,9 @@ res <- corgraph(mat = cormat)
 (g <- res$undir.graph)
 ```
 
-    ## IGRAPH e11306c UN-- 120 1605 -- 
+    ## IGRAPH 08265fe UN-- 120 1605 -- 
     ## + attr: name (v/c)
-    ## + edges from e11306c (vertex names):
+    ## + edges from 08265fe (vertex names):
     ##  [1] gene158--gene838 gene765--gene118 gene765--gene871 gene765--gene189
     ##  [5] gene765--gene818 gene838--gene118 gene686--gene770 gene910--gene271
     ##  [9] gene910--gene416 gene910--gene278 gene910--gene254 gene271--gene510
@@ -166,28 +165,17 @@ head(res$res.ks.text)
 
 ### cluster\_mine
 
--   非線形の関連を見つける。
--   `minerva::mine`の出力を整形, pearsonとspearmanも加えたdataframeを返す
+非線形の関連を見つける。`minerva::mine`を実行して、その結果を整形してdataframeで返す - pearson(r)とspearman(rho)も計算する - TICの大きい順に並べる
 
 ``` r
 # mineを連続実行、結果を整形出力
-res.mic <- cluster_mine(cl_dat = res.clm$cluster_dat)
+cldat <- res.clm$cluster_dat$`2`
+res.mic <- cluster_mine(cl_dat = cldat)
 
 # 結果を一部表示
-lapply(res.mic[c(2,4)], function(x)x[1:3,])
+res.mic[1:3,]
 ```
 
-    ## $`1`
-    ##         x_id    y_id mic        mas mev mcn      micr2      gmic      tic
-    ## 3714 gene204 gene655   1 0.03285807   1   2 0.05284526 1.0000000 18.12556
-    ## 3738  gene67 gene519   1 0.01908699   1   3 0.05036932 0.9935214 17.94552
-    ## 3731 gene179 gene519   1 0.04402342   1   3 0.06798504 0.9942813 17.61939
-    ##        pearson  spearman
-    ## 3714 0.9732188 0.9794221
-    ## 3738 0.9744900 0.9627502
-    ## 3731 0.9654092 0.9593205
-    ## 
-    ## $`2`
     ##         x_id    y_id       mic        mas       mev      mcn       micr2
     ## 1280 gene850 gene558 0.9744918 0.02346228 0.9744918 3.807355 0.008202131
     ## 1296 gene491 gene558 1.0000000 0.01791730 1.0000000 4.000000 0.059638626

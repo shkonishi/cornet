@@ -33,7 +33,7 @@ dat[1:6,1:6]; dim(dat)
 - `amap::Dist`のメソッドから距離定義を選択する。別手法で作成した距離行列を`as.dist`で変換したdistオブジェクトでも良い。
 
 ```{r}
-res.clm <- cornet::cluster_mat(dat = dat, distm = "spearman", clm = "average",
+res.clm <- cluster_mat(dat = dat, distm = "spearman", clm = "average",
                            column = 5:ncol(dat), method_dycut = "tree",
                            x_fctr = dat$days, y_fctr = dat$runs, rep_fctr = dat$reps)
 
@@ -54,7 +54,7 @@ res.clm$gg_mat_med
 - 相関行列のような対称行列から重み付きエッジリスト(完全グラフ)を作成
 ```{r}
 # 相関行列のような対称行列から重み付きエッジリストを作成
-edge.list <- matoedge(cor(res.clm$cluster_dat[[1]]))
+edge.list <- matoedge(cor(res.clm$cluster_dat[[1]]), diag = F, zero.weight = F)
 head(edge.list)
 
 ```
@@ -85,14 +85,16 @@ head(res$res.ks.text)
 ```
 
 ### cluster_mine
-- 非線形の関連を見つける。
-- `minerva::mine`の出力を整形, pearsonとspearmanも加えたdataframeを返す
+非線形の関連を見つける。`minerva::mine`を実行して、その結果を整形してdataframeで返す
+- pearson(r)とspearman(rho)も計算する
+- TICの大きい順に並べる
 ```{r}
 # mineを連続実行、結果を整形出力
-res.mic <- cluster_mine(cl_dat = res.clm$cluster_dat)
+cldat <- res.clm$cluster_dat$`2`
+res.mic <- cluster_mine(cl_dat = cldat)
 
 # 結果を一部表示
-lapply(res.mic[c(2,4)], function(x)x[1:3,])
+res.mic[1:3,]
 
 ```
 

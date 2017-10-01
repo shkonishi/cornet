@@ -2,7 +2,7 @@
 #' @description Convert a correlation matrix to a weighted edge list from lower triangled data.
 #'     if this matrix is named matrix, these names as node id.
 #' @usage matoedge(mat, diag, zero.weight)
-#' @param mat A squared matrix, and lower and upper triangled data to be a same.
+#' @param mat A squared and synmetric matrix, like a correlation matirx.
 #' @param diag default, FALSE
 #' @param zero.weight default, FALSE
 #' @examples

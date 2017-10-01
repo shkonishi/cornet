@@ -50,7 +50,7 @@
 #' @importFrom stats sd hclust as.dendrogram median
 #' @export
 cluster_mat <- function(dat, distm, clm, column=1:ncol(dat), method_dycut, y_fctr, x_fctr, rep_fctr, ...){
-  # argument check: dat
+  # argument check: dat ----
   if (class(dat)=="data.frame"){
     mat <- dat[column]
   } else if (class(dat) == "matrix"){
@@ -59,77 +59,124 @@ cluster_mat <- function(dat, distm, clm, column=1:ncol(dat), method_dycut, y_fct
       names(mat) <- 1:ncol(mat)
     }
   }
+
+  # hierarchical clustering ----
   dis.mat <- amap::Dist(t(mat), method = distm)
   r_hcl <- stats::hclust(dis.mat, method = clm)
   r_den <- dendextend::hang.dendrogram(as.dendrogram(r_hcl))
 
   # cutreeDynamic  ----
-  if (method_dycut=="tree"){
-    dyct <- dynamicTreeCut::cutreeDynamic(dendro = r_hcl, method = method_dycut, ... )
-  } else if (method_dycut=="hybrid"){
-    dyct <- dynamicTreeCut::cutreeDynamic(dendro = r_hcl, distM = as.matrix(dis.mat), method = method_dycut, ... )
-  } else {
-    stop("cut height still be deveropping")
-  }
+  dyct.tr <- dynamicTreeCut::cutreeDynamic(dendro = r_hcl, method = "tree", ... )
+  dyct.hb <- dynamicTreeCut::cutreeDynamic(dendro = r_hcl, distM = as.matrix(dis.mat), method = "hybrid", ... )
+
 
   # leaf label (leaf order) ----
   lab <- r_hcl$labels
-  names(dyct) <- lab
-  dyct.lo <- dyct[r_hcl$order]
+  names(dyct.hb) <- lab; names(dyct.tr) <- lab
+  dyct.hb.lo <- dyct.hb[r_hcl$order];  dyct.tr.lo <- dyct.tr[r_hcl$order]
 
-  # draw dendrogram with cluster -----
-  ## cluster colour, cluster number
+  # draw dendrogram with cluster
+  ## cluster colour, cluster number ----
   gg_color_hue <- function(n) {
     hues = seq(15, 375, length = n + 1)
     hcl(h = hues, l = 65, c = 100)[1:n]
   }
-  if(any(unique(dyct) == 0)){
-    vcol =c("grey50",gg_color_hue(length(unique(dyct)) -1))
-    cl_levels <- c(0, unique(dyct.lo)[!unique(dyct.lo) %in% 0])
-
+  if(any(unique(dyct.hb) == 0)){
+    hb.vcol =c("grey50",gg_color_hue(length(unique(dyct.hb)) -1))
+    hb.cl_levels <- c(0, unique(dyct.hb.lo)[!unique(dyct.hb.lo) %in% 0])
   }else{
-    vcol <- gg_color_hue(length(unique(dyct)))
-    cl_levels <- unique(dyct.lo)
+    hb.vcol <- gg_color_hue(length(unique(dyct.hb)))
+    hb.cl_levels <- unique(dyct.hb.lo)
+  }
+  if(any(unique(dyct.tr) == 0)){
+    tr.vcol =c("grey50",gg_color_hue(length(unique(dyct.tr)) -1))
+    tr.cl_levels <- c(0, unique(dyct.tr.lo)[!unique(dyct.tr.lo) %in% 0])
+  }else{
+    tr.vcol <- gg_color_hue(length(unique(dyct.tr)))
+    tr.cl_levels <- unique(dyct.tr.lo)
   }
 
-  ## leaf colour(sample order for side bar colour)  &
-  leaf_col_so <- vcol[factor(dyct, levels=cl_levels)] # leaf col (sample order)
-  leaf_col_lo <- leaf_col_so[r_hcl$order] # leaf col(leaf order)
+  ## leaf colour(sample order for side bar colour) ----
+  tr.leaf_col_so <- tr.vcol[factor(dyct.tr, levels=tr.cl_levels)] # leaf col (sample order)
+  tr.leaf_col_lo <- tr.leaf_col_so[r_hcl$order] # leaf col(leaf order)
+  hb.leaf_col_so <- hb.vcol[factor(dyct.hb, levels=hb.cl_levels)] # leaf col (sample order)
+  hb.leaf_col_lo <- hb.leaf_col_so[r_hcl$order] # leaf col(leaf order)
 
-  ## cluster id
-  llab <- split(lab[r_hcl$order], factor(dyct.lo, levels=cl_levels))
-
-  ## split data frame corresponding to cluster.
-  cl_dat <- lapply(llab, function(x)mat[x])
-
-  ## add edge colour ----
+  ## split cluster and data frame corresponding to cluster, and  add edge colour to dendrogram ----
   f <- function(x, y){
     r_den <<- dendextend::set(r_den, "by_labels_branches_col", value = x, TF_values = y)
   }
-  invisible(mapply(f, llab, vcol))
+  if (method_dycut == "tree"){
+    llab <- split(lab[r_hcl$order], factor(dyct.tr.lo, levels=tr.cl_levels))
+    cl_levels <- tr.cl_levels
+    invisible(mapply(f, llab, tr.vcol))
+    dyct <- dyct.tr
+  } else if (method_dycut == "hybrid"){
+    llab <- split(lab[r_hcl$order], factor(dyct.hb.lo, levels=hb.cl_levels))
+    cl_levels <- hb.cl_levels
+    invisible(mapply(f, llab, hb.vcol))
+    dyct <- dyct.hb
+  }
+
+  cl_dat <- lapply(llab, function(x)mat[x])
+
 
   # barplot as cluster side bar ----
   ## graph layout ----
   def.par <- par(no.readonly = TRUE) # default
-  gmat <- matrix(c(1,2), nrow=2, byrow = TRUE)
-  lay <- graphics::layout(gmat, widths=c(10,10), heights=c(4,1), respect = T)
+  gmat <- matrix(c(1,2,3), nrow=3, byrow = TRUE)
+  lay <- graphics::layout(gmat, widths=c(10,10,10), heights=c(4,1,1), respect = T)
   graphics::par(mar=c(0,2,0,0))
   graphics::plot(r_den, leaflab="none")
 
   ## cluster side bar ----
   par(mar=c(0,2,2,0))
   ## number of cluster elements
-  cl_txt <- if(any(cl_levels==0)){
-    as.character(cl_levels[cl_levels!=0])
-    }else{
-      as.character(cl_levels)
-      }
-  cl_num <- table(dyct.lo)[cl_txt] # cluster number table
-  cl_txt_al <- rep(NA, length(dyct)) # text on color side bar
-  cl_txt_al[match(cl_txt, dyct.lo) + ceiling(cl_num/2)] <- cl_txt
-  bp <- graphics::barplot(rep(1, length(leaf_col_lo)), yaxt="n", border = leaf_col_lo, col=leaf_col_lo)
-  graphics::text(bp, y = 0.5, labels = cl_txt_al, col="white")
+  ### hybrid bar
+  hb.cl_txt <- if(any(hb.cl_levels==0)){
+    as.character(hb.cl_levels[hb.cl_levels!=0])
+  }else{
+    as.character(hb.cl_levels)
+  }
+  ### tree bar
+  tr.cl_txt <- if(any(tr.cl_levels==0)){
+    as.character(tr.cl_levels[tr.cl_levels!=0])
+  }else{
+    as.character(tr.cl_levels)
+  }
+
+  hb.cl_num <- table(dyct.hb.lo)[hb.cl_txt] # cluster number table
+  hb.cl_txt_al <- rep(NA, length(dyct.hb.lo)) # text on color side bar
+  hb.cl_txt_al[match(hb.cl_txt, dyct.hb.lo) + ceiling(hb.cl_num/2)] <- hb.cl_txt
+
+  tr.cl_num <- table(dyct.tr.lo)[tr.cl_txt] # cluster number table
+  tr.cl_txt_al <- rep(NA, length(dyct.tr.lo)) # text on color side bar
+  tr.cl_txt_al[match(tr.cl_txt, dyct.tr.lo) + ceiling(tr.cl_num/2)] <- tr.cl_txt
+
+  if (method_dycut=="tree"){
+    bp <- graphics::barplot(rep(1, length(tr.leaf_col_lo)), yaxt="n", ylab="tree", border = tr.leaf_col_lo, col=tr.leaf_col_lo)
+    graphics::text(bp, y = 0.5, labels = tr.cl_txt_al, col="white")
+    graphics::mtext(side = 2, outer = 0, text = "tree")
+
+    bp <- graphics::barplot(rep(1, length(hb.leaf_col_lo)), yaxt="n", ylab="hybrid", border = hb.leaf_col_lo, col=hb.leaf_col_lo)
+    graphics::text(bp, y = 0.5, labels = hb.cl_txt_al, col="white")
+    graphics::mtext(side = 2, outer = 0, text = "hybrid")
+
+  }else if (method_dycut=="hybrid"){
+    bp <- graphics::barplot(rep(1, length(hb.leaf_col_lo)), yaxt="n", border = hb.leaf_col_lo, col=hb.leaf_col_lo)
+    graphics::text(bp, y = 0.5, labels = hb.cl_txt_al, col="white")
+    graphics::mtext(side = 2, outer = 0, text = "hybrid")
+    bp <- graphics::barplot(rep(1, length(tr.leaf_col_lo)), yaxt="n", ylab="tree", border = tr.leaf_col_lo, col=tr.leaf_col_lo)
+    graphics::text(bp, y = 0.5, labels = tr.cl_txt_al, col="white")
+    graphics::mtext(side = 2, outer = 0, text = "tree")
+
+  }
   par(def.par) # reset to default
+
+
+
+
+
 
   # matplot ----
   ## z-conversion ----
@@ -274,17 +321,17 @@ cluster_mat <- function(dat, distm, clm, column=1:ncol(dat), method_dycut, y_fct
     if(length(cl_levels)%%2 == 0){
       fct_col <- 2
     }else{
-        fct_col <- 3
-      }
+      fct_col <- 3
+    }
     ggmat <- ggplot2::ggplot(gg_dat,
-                ggplot2::aes(x=x_fctr, y=value, colour=y_fctr, group=interaction(genes, y_fctr))) +
+                             ggplot2::aes(x=x_fctr, y=value, colour=y_fctr, group=interaction(genes, y_fctr))) +
       ggplot2::geom_line(alpha=0.5, linetype=3) +
       ggplot2::theme_bw() +
       ggplot2::facet_wrap(~cl, ncol=fct_col)
 
     ## plot median of all genes belogs to a cluster. ----
     ggmat2 <- ggplot2::ggplot(gg_dat_med,
-                             ggplot2::aes(x=x_fctr, y=value, colour=y_fctr, group=interaction(genes, y_fctr))) +
+                              ggplot2::aes(x=x_fctr, y=value, colour=y_fctr, group=interaction(genes, y_fctr))) +
       ggplot2::geom_line(size = 2, alpha = 0.7) +
       ggplot2::theme_bw() +
       ggplot2::facet_wrap(~cl, ncol=fct_col)

@@ -7,7 +7,7 @@
 matoedge(mat, diag, zero.weight)
 }
 \arguments{
-\item{mat}{A squared matrix, and lower and upper triangled data to be a same.}
+\item{mat}{A squared and synmetric matrix, like a correlation matirx.}
 
 \item{diag}{default, FALSE}
 
