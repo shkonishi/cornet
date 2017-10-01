@@ -50,7 +50,7 @@
 #' @importFrom stats sd hclust as.dendrogram median
 #' @export
 cluster_mat <- function(dat, distm, clm, column, method_dycut, y_fctr, x_fctr, rep_fctr, ...){
-
+  # argument check: dat
   if (class(dat)=="data.frame"){
     mat <- dat[column]
   } else if (class(dat) == "matrix"){
@@ -63,7 +63,7 @@ cluster_mat <- function(dat, distm, clm, column, method_dycut, y_fctr, x_fctr, r
   r_hcl <- stats::hclust(dis.mat, method = clm)
   r_den <- dendextend::hang.dendrogram(as.dendrogram(r_hcl))
 
-  # method tree  method hybrid ----
+  # cutreeDynamic  ----
   if (method_dycut=="tree"){
     dyct <- dynamicTreeCut::cutreeDynamic(dendro = r_hcl, method = method_dycut, ... )
   } else if (method_dycut=="hybrid"){
@@ -104,8 +104,9 @@ cluster_mat <- function(dat, distm, clm, column, method_dycut, y_fctr, x_fctr, r
   }
   invisible(mapply(f, llab, vcol))
 
-  # barplot cluster side bar ----
+  # barplot as cluster side bar ----
   ## graph layout ----
+  def.par <- par(no.readonly = TRUE) # default
   gmat <- matrix(c(1,2), nrow=2, byrow = TRUE)
   lay <- graphics::layout(gmat, widths=c(10,10), heights=c(4,1), respect = T)
   graphics::par(mar=c(0,2,0,0))
@@ -119,6 +120,8 @@ cluster_mat <- function(dat, distm, clm, column, method_dycut, y_fctr, x_fctr, r
   cl_txt_al[ceiling(cumsum(cl_num)-cl_num/2)] <- cl_txt
   bp <- graphics::barplot(rep(1, length(leaf_col_lo)), yaxt="n", border = leaf_col_lo, col=leaf_col_lo)
   graphics::text(bp, y = 0.5, labels = cl_txt_al, col="white")
+  par(def.par) # reset to default
+
 
   # matplot ----
   ## z-conversion ----
