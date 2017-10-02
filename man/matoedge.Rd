@@ -2,9 +2,9 @@
 % Please edit documentation in R/matoedge.R
 \name{matoedge}
 \alias{matoedge}
-\title{Convert a correlation matrix to a weighted edge list}
+\title{Convert a correlation matrix to a weighted edge list or igraph object}
 \usage{
-matoedge(mat, diag, zero.weight)
+matoedge(mat, diag, zero.weight, format)
 }
 \arguments{
 \item{mat}{A squared and synmetric matrix, like a correlation matirx.}
@@ -12,6 +12,8 @@ matoedge(mat, diag, zero.weight)
 \item{diag}{default, FALSE}
 
 \item{zero.weight}{default, FALSE}
+
+\item{format}{select "igraph"(default) or "df" .}
 }
 \description{
 Convert a correlation matrix to a weighted edge list from lower triangled data.
@@ -20,5 +22,5 @@ Convert a correlation matrix to a weighted edge list from lower triangled data.
 \examples{
 mat <- cor(iris[-5])
 matoedge(mat = mat)
-matoedge(mat = mat, diag = TRUE)
+matoedge(mat = mat, diag = TRUE, format = "dataframe")
 }

@@ -24,16 +24,16 @@ cluster_mine <- function(cl_dat){
   f <- function(x){
     res.mine <-  minerva::mine(x, alpha = 0.6, n.cores = 2) # mine
     # create edge list
-    edge <- cornet::matoedge(res.mine$MIC, zero.weight = TRUE)[1:2]
-    mic <- cornet::matoedge(res.mine$MIC, zero.weight = TRUE)[,3] # mic
-    mas <- cornet::matoedge(res.mine$MAS, zero.weight = TRUE)[,3] # mas
-    mev <- cornet::matoedge(res.mine$MEV, zero.weight = TRUE)[,3] # mev
-    mcn <- cornet::matoedge(res.mine$MCN, zero.weight = TRUE)[,3] # mcn
-    micr2 <- cornet::matoedge(res.mine$MICR2, zero.weight = TRUE)[,3] # micr2
-    gmic <- cornet::matoedge(res.mine$GMIC, zero.weight = TRUE)[,3] # gmic
-    tic <- cornet::matoedge(res.mine$TIC, zero.weight = TRUE)[,3] # tic
-    r <- cornet::matoedge(cor(x, method="pearson"), zero.weight = TRUE)[,3]
-    rho <- cornet::matoedge(cor(x, method="spearman"), zero.weight = TRUE)[,3]
+    edge <- cornet::matoedge(res.mine$MIC, zero.weight = TRUE, format = "df")[1:2]
+    mic <- cornet::matoedge(res.mine$MIC, zero.weight = TRUE, format = "df")[,3] # mic
+    mas <- cornet::matoedge(res.mine$MAS, zero.weight = TRUE, format = "df")[,3] # mas
+    mev <- cornet::matoedge(res.mine$MEV, zero.weight = TRUE, format = "df")[,3] # mev
+    mcn <- cornet::matoedge(res.mine$MCN, zero.weight = TRUE, format = "df")[,3] # mcn
+    micr2 <- cornet::matoedge(res.mine$MICR2, zero.weight = TRUE, format = "df")[,3] # micr2
+    gmic <- cornet::matoedge(res.mine$GMIC, zero.weight = TRUE, format = "df")[,3] # gmic
+    tic <- cornet::matoedge(res.mine$TIC, zero.weight = TRUE, format = "df")[,3] # tic
+    r <- cornet::matoedge(cor(x, method="pearson"), zero.weight = TRUE, format = "df")[,3]
+    rho <- cornet::matoedge(cor(x, method="spearman"), zero.weight = TRUE, format = "df")[,3]
     dat <- data.frame(edge, mic, mas, mev, mcn, micr2, gmic, tic, pearson=r, spearman=rho, row.names = NULL)
     dat <- dat[order(dat$tic, decreasing = T),]
     return(dat)

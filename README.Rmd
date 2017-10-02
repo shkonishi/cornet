@@ -54,7 +54,8 @@ res.clm$gg_mat_med
 - 相関行列のような対称行列から重み付きエッジリスト(完全グラフ)を作成
 ```{r}
 # 相関行列のような対称行列から重み付きエッジリストを作成
-edge.list <- matoedge(cor(res.clm$cluster_dat[[1]]), diag = F, zero.weight = F)
+cormat <- cor(res.clm$cluster_dat[[1]])
+edge.list <- matoedge(mat = cormat, format = "df", diag = F, zero.weight = F)
 head(edge.list)
 
 ```
