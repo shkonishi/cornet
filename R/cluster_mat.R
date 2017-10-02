@@ -61,14 +61,22 @@ cluster_mat <- function(dat, distm, clm, column=1:ncol(dat), method_dycut, y_fct
   }
 
   # hierarchical clustering ----
-  dis.mat <- amap::Dist(t(mat), method = distm)
-  r_hcl <- stats::hclust(dis.mat, method = clm)
+  distms <- c("euclidean", "maximum", "manhattan", "canberra", "binary", "pearson", "abspearson", "correlation", "abscorrelation", "spearman", "kendall")
+  if (any(distms %in% distm)){
+    dis.mat <- amap::Dist(t(mat), method = distm)
+    r_hcl <- stats::hclust(dis.mat, method = clm)
+  } else if (class(distm)=="dist"){
+    dis.mat <- distm
+    r_hcl <- stats::hclust(dis.mat, method = clm)
+  } else {
+    stop('"distm" is select from "euclidean", "maximum", "manhattan", "canberra", "binary", "pearson", "abspearson", "correlation", "abscorrelation", "spearman", "kendall", \n
+         or your dist object.')
+  }
   r_den <- dendextend::hang.dendrogram(as.dendrogram(r_hcl))
 
   # cutreeDynamic  ----
   dyct.tr <- dynamicTreeCut::cutreeDynamic(dendro = r_hcl, method = "tree", ... )
   dyct.hb <- dynamicTreeCut::cutreeDynamic(dendro = r_hcl, distM = as.matrix(dis.mat), method = "hybrid", ... )
-
 
   # leaf label (leaf order) ----
   lab <- r_hcl$labels
@@ -155,19 +163,19 @@ cluster_mat <- function(dat, distm, clm, column=1:ncol(dat), method_dycut, y_fct
 
   if (method_dycut=="tree"){
     bp <- graphics::barplot(rep(1, length(tr.leaf_col_lo)), yaxt="n", ylab="tree", border = tr.leaf_col_lo, col=tr.leaf_col_lo)
-    graphics::text(bp, y = 0.5, labels = tr.cl_txt_al, col="white")
+    #graphics::text(bp, y = 0.5, labels = tr.cl_txt_al, col="white")
     graphics::mtext(side = 2, outer = 0, text = "tree")
 
     bp <- graphics::barplot(rep(1, length(hb.leaf_col_lo)), yaxt="n", ylab="hybrid", border = hb.leaf_col_lo, col=hb.leaf_col_lo)
-    graphics::text(bp, y = 0.5, labels = hb.cl_txt_al, col="white")
+    #graphics::text(bp, y = 0.5, labels = hb.cl_txt_al, col="white")
     graphics::mtext(side = 2, outer = 0, text = "hybrid")
 
   }else if (method_dycut=="hybrid"){
     bp <- graphics::barplot(rep(1, length(hb.leaf_col_lo)), yaxt="n", border = hb.leaf_col_lo, col=hb.leaf_col_lo)
-    graphics::text(bp, y = 0.5, labels = hb.cl_txt_al, col="white")
+    #graphics::text(bp, y = 0.5, labels = hb.cl_txt_al, col="white")
     graphics::mtext(side = 2, outer = 0, text = "hybrid")
     bp <- graphics::barplot(rep(1, length(tr.leaf_col_lo)), yaxt="n", ylab="tree", border = tr.leaf_col_lo, col=tr.leaf_col_lo)
-    graphics::text(bp, y = 0.5, labels = tr.cl_txt_al, col="white")
+    #graphics::text(bp, y = 0.5, labels = tr.cl_txt_al, col="white")
     graphics::mtext(side = 2, outer = 0, text = "tree")
 
   }
