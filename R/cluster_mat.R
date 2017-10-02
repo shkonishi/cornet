@@ -2,8 +2,8 @@
 #' @description Cluster_mat
 #' @usage cluster_mat(dat, distm, clm, column, method_dycut, y_fctr, x_fctr, rep_fctr, ...)
 #' @param dat data frame or matrix
-#' @param distm distance measure from amap::Dist
-#' @param clm hclust methods
+#' @param distm distance measure from amap::Dist options
+#' @param clm clustering method select from hclust options
 #' @param column column which containing expression data default 'column=1:ncol(dat)'
 #' @param method_dycut method of dynamic cut
 #' @param x_fctr x-axis factor for ggplot object like matplot

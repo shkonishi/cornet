@@ -9,7 +9,7 @@
 #' @examples
 #' mat <- cor(iris[-5])
 #' matoedge(mat = mat)
-#' matoedge(mat = mat, diag = TRUE, format = "dataframe")
+#' matoedge(mat = mat, diag = TRUE, format = "df")
 #' @export
 matoedge <- function(mat, diag = FALSE, zero.weight = FALSE, format="igraph"){
   # argument check: mat is a squared matrix

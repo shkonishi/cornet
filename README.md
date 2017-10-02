@@ -18,7 +18,7 @@ ls("package:cornet")
 ```
 
     ## [1] "cluster_dat"  "cluster_mat"  "cluster_mine" "corgraph"    
-    ## [5] "corheat"      "matoedge"
+    ## [5] "corheat"      "igplot"       "matoedge"
 
 ### data
 
@@ -94,7 +94,8 @@ res.clm$gg_mat_med
 
 ``` r
 # 相関行列のような対称行列から重み付きエッジリストを作成
-edge.list <- matoedge(cor(res.clm$cluster_dat[[1]]), diag = F, zero.weight = F)
+cormat <- cor(res.clm$cluster_dat[[1]])
+edge.list <- matoedge(mat = cormat, format = "df", diag = F, zero.weight = F)
 head(edge.list)
 ```
 
@@ -127,9 +128,9 @@ res <- corgraph(mat = cormat)
 (g <- res$undir.graph)
 ```
 
-    ## IGRAPH bdd1839 UN-- 120 1605 -- 
+    ## IGRAPH 17e95e0 UN-- 120 1605 -- 
     ## + attr: name (v/c)
-    ## + edges from bdd1839 (vertex names):
+    ## + edges from 17e95e0 (vertex names):
     ##  [1] gene158--gene838 gene765--gene118 gene765--gene871 gene765--gene189
     ##  [5] gene765--gene818 gene838--gene118 gene686--gene770 gene910--gene271
     ##  [9] gene910--gene416 gene910--gene278 gene910--gene254 gene271--gene510

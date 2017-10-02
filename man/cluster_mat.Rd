@@ -9,9 +9,9 @@ cluster_mat(dat, distm, clm, column, method_dycut, y_fctr, x_fctr, rep_fctr, ...
 \arguments{
 \item{dat}{data frame or matrix}
 
-\item{distm}{distance measure from amap::Dist}
+\item{distm}{distance measure from amap::Dist options}
 
-\item{clm}{hclust methods}
+\item{clm}{clustering method select from hclust options}
 
 \item{column}{column which containing expression data default 'column=1:ncol(dat)'}
 

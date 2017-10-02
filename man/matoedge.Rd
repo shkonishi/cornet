@@ -22,5 +22,5 @@ Convert a correlation matrix to a weighted edge list from lower triangled data.
 \examples{
 mat <- cor(iris[-5])
 matoedge(mat = mat)
-matoedge(mat = mat, diag = TRUE, format = "dataframe")
+matoedge(mat = mat, diag = TRUE, format = "df")
 }

@@ -39,7 +39,7 @@ corgraph <- function(mat, it = seq(0.30,0.99,by=0.01)){
   th <- res.ks.dat$thresh[which.min(res.ks.dat$ks_d)]
 
   mtx_opt <- ifelse(mat > th | mat < -th, mat, 0)
-  edgel <- cornet::matoedge(mtx_opt)
+  edgel <- cornet::matoedge(mtx_opt, format = "df")
   g <- igraph::graph.edgelist(as.matrix(edgel[edgel$value != 0, 1:2]), directed = F )
   return(list(undir.graph = g, edge.list=edgel, res.ks.text=res.ks.dat))
 }
