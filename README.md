@@ -107,7 +107,7 @@ head(edge.list)
     ## 5 gene54 gene454  0.086375472
     ## 6 gene54 gene694  0.164309172
 
-#### corgraph
+### corgraph
 
 -   相関行列から自動的に閾値を指定してエッジリストを作成する
 -   igraphオブジェクト, エッジリスト, ks-testの結果が返る
@@ -128,9 +128,9 @@ res <- corgraph(mat = cormat)
 (g <- res$undir.graph)
 ```
 
-    ## IGRAPH 17e95e0 UN-- 120 1605 -- 
+    ## IGRAPH 335aab2 UN-- 120 1605 -- 
     ## + attr: name (v/c)
-    ## + edges from 17e95e0 (vertex names):
+    ## + edges from 335aab2 (vertex names):
     ##  [1] gene158--gene838 gene765--gene118 gene765--gene871 gene765--gene189
     ##  [5] gene765--gene818 gene838--gene118 gene686--gene770 gene910--gene271
     ##  [9] gene910--gene416 gene910--gene278 gene910--gene254 gene271--gene510
@@ -166,6 +166,68 @@ head(res$res.ks.text)
     ## 4   0.33 0.8951993    0
     ## 5   0.34 0.8865022    0
     ## 6   0.35 0.8853600    0
+
+### igplot
+
+igraphオブジェクトをプロットする。たくさんあるパラメータの表記をできるだけ省略したいので、よく使うオプションは初期値を指定してある。大雑把に視覚化したい時に使う。
+
+#### sample data
+
+``` r
+# sample data
+dat <- data.frame(
+ S1 =c(43.26, 166.6, 12.53, 28.77, 114.7, 119.1, 118.9, 3.76, 32.73, 17.46),
+ S2=c(40.89, 41.87, 39.55, 191.92, 79.7, 80.57, 156.69, 2.48, 11.99, 56.11),
+ S3=c(5.05, 136.65, 42.09, 236.56, 99.76, 114.59, 186.95, 136.78, 118.8, 21.41)
+ )
+rownames(dat) <- paste0("G", 1:10)
+
+# correlation matrix
+cormat <- round(cor(t(dat)),2)
+```
+
+#### 閾値グラフ
+
+``` r
+# threshold graph
+res <- cornet::corgraph(mat=cormat)
+g1 <- res[[1]]
+cornet::igplot(ig = g1, v.s = 15)
+```
+
+![](README_files/figure-markdown_github-ascii_identifiers/unnamed-chunk-8-1.png)
+
+##### 完全グラフ
+
+``` r
+g2 <- cornet::matoedge(cormat)
+ewid <- abs(igraph::E(g2)$weight)
+ecol <-  ifelse(igraph::E(g2)$weight < 0 , "steelblue3", "grey80")
+cornet::igplot(ig = g2, lay=igraph::layout.circle, v.s = 15, e.c = ecol, e.w = ewid*4)
+```
+
+![](README_files/figure-markdown_github-ascii_identifiers/unnamed-chunk-9-1.png)
+
+#### all layout test
+
+-   layoutの関数を取得して全てplot
+-   データの種類によってはerrorになる
+
+``` r
+par(mfrow = c(4,4))
+cornet::igplot(ig = g1, lay = "all", v.s = igraph::degree(g1)*10)
+```
+
+    ## [1] "Error in layout layout.bipartite"
+
+    ## [1] "Error in layout layout.merge"
+    ## [1] "Error in layout layout.norm"
+
+![](README_files/figure-markdown_github-ascii_identifiers/unnamed-chunk-10-1.png)
+
+    ## [1] "Error in layout layout.sugiyama"
+
+![](README_files/figure-markdown_github-ascii_identifiers/unnamed-chunk-10-2.png)
 
 ### cluster\_mine
 

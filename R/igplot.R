@@ -1,10 +1,10 @@
 #' simple plot of igraph object
 #' @description several options has initial value, and
-#' @usage igplot(ig, lay, v.l, v.l.c, v.f.c, v.s, v.c, e.c, e.w, ...)
+#' @usage igplot(ig, lay, v.l, v.l.c, v.f.c, v.s, v.c, e.c, e.w, e.lty, ...)
 #' @param ig igraph object
-#' @param lay graph layout
-#' @param v.c,v.f.c,v.l,v.l.c,v.s vertex.color, vertex.frame.color, vertex.label, vertex.label.color, vertex.size
-#' @param e.c,e.w edge.color, edge.width
+#' @param lay graph layout, if 'lay="all"', all graph layout was performed.
+#' @param v.c,v.f.c,v.l,v.l.c,v.s vertex parameters, v.c(vertex.color), v.f(vertex.frame.color), v.l(vertex.label), v.l.c(vertex.label.color), v.s(vertex.size)
+#' @param e.c,e.w,e.lty edge parameters, e.c(edge.color), e.w(edge.width), e.lty(edge.lty)
 #' @param ... other arguments of plot.igraph
 #' @examples
 #' # sample data
@@ -26,24 +26,43 @@
 #' # complete graph
 #' g2 <- cornet::matoedge(cormat)
 #'  ewid <- abs(igraph::E(g2)$weight)
-#'  ecol <-  ifelse(igraph::E(g2)$weight < 0 , "red", "grey80")
-#' igplot(ig = g2, v.s = 15, e.c = ecol, e.w = ewid*4)
-#'
-#' @importFrom igraph layout_nicely V E
+#'  ecol <-  ifelse(igraph::E(g2)$weight < 0 , "steelblue3", "grey80")
+#' igplot(ig = g2, lay=igraph::layout.circle, v.s = 15, e.c = ecol, e.w = ewid*4)
+#' @importFrom igraph layout_nicely V E layout.auto layout.bipartite layout.circle layout.davidson.harel layout.drl layout.fruchterman.reingold layout.fruchterman.reingold.grid layout.gem layout.graphopt layout.grid layout.grid.3d layout.kamada.kawai layout.lgl layout.mds layout.merge layout.norm layout.random layout.reingold.tilford layout.sphere layout.spring layout.star layout.sugiyama layout.svd
+#' @importFrom utils lsf.str
 #' @export
-igplot <- function(ig, lay=igraph::layout_nicely, v.l=igraph::V(ig)$name,
-                        v.l.c = "white", v.f.c="white", v.s = 5, v.c = "turquoise3",
-                        e.c = "grey80", e.w = 1, ...){
-  par(mar=c(0,0,0,0))
-  plot(ig,
-       layout=lay,
-       vertex.label = v.l,
-       vertex.label.color = v.l.c,
-       vertex.frame.color=v.f.c,
-       vertex.size = v.s,
-       vertex.color = v.c,
-       edge.color = e.c,
-       edge.width = e.w,
-       ...
-  )
+igplot <- function(ig, lay = igraph::layout_nicely, v.l=igraph::V(ig)$name,
+                        v.l.c = "white", v.f.c="white", v.s = 5, v.c = "cornsilk4",
+                        e.c = "grey80", e.w = 1, e.lty = 1, ...){
+
+  if (!is.function(lay)){
+    if (lay == "all"){
+      lays <- grep("^layout\\.", unclass(utils::lsf.str(envir = asNamespace("igraph"), all = T)), value = T)
+      suppressWarnings(
+        for (x in lays) {
+          #ERROR HANDLING
+          possibleError <- tryCatch({
+            coords <- do.call(x, list(ig))
+            par(mar=c(0,0,1,0))
+            igraph::plot.igraph(ig, layout=coords,
+                                vertex.label = v.l, vertex.label.color = v.l.c, vertex.frame.color=v.f.c,
+                                vertex.size = v.s, vertex.color = v.c, edge.color = e.c,
+                                edge.width = e.w, edge.lty=e.lty, main = x, edge.lty=e.lty, ...)
+          },
+          error=function(e) {
+            e
+            print(paste("Error in layout ",x,sep = ""))
+          }
+          )
+          if(inherits(possibleError, "error")) next
+        }
+      )
+    }
+  } else{
+    par(mar=c(0,0,0,0))
+    plot(ig, layout=lay, vertex.label = v.l, vertex.label.color = v.l.c,
+         vertex.frame.color=v.f.c, vertex.size = v.s, vertex.color = v.c,
+         edge.color = e.c, edge.width = e.w, edge.lty=e.lty, ...
+    )
+  }
 }

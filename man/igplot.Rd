@@ -4,16 +4,16 @@
 \alias{igplot}
 \title{simple plot of igraph object}
 \usage{
-igplot(ig, lay, v.l, v.l.c, v.f.c, v.s, v.c, e.c, e.w, ...)
+igplot(ig, lay, v.l, v.l.c, v.f.c, v.s, v.c, e.c, e.w, e.lty, ...)
 }
 \arguments{
 \item{ig}{igraph object}
 
-\item{lay}{graph layout}
+\item{lay}{graph layout, if 'lay="all"', all graph layout was performed.}
 
-\item{v.c, v.f.c, v.l, v.l.c, v.s}{vertex.color, vertex.frame.color, vertex.label, vertex.label.color, vertex.size}
+\item{v.c, v.f.c, v.l, v.l.c, v.s}{vertex parameters, v.c(vertex.color), v.f(vertex.frame.color), v.l(vertex.label), v.l.c(vertex.label.color), v.s(vertex.size)}
 
-\item{e.c, e.w}{edge.color, edge.width}
+\item{e.c, e.w, e.lty}{edge parameters, e.c(edge.color), e.w(edge.width), e.lty(edge.lty)}
 
 \item{...}{other arguments of plot.igraph}
 }
@@ -40,7 +40,6 @@ igplot(ig=g1, v.s=15)
 # complete graph
 g2 <- cornet::matoedge(cormat)
  ewid <- abs(igraph::E(g2)$weight)
- ecol <-  ifelse(igraph::E(g2)$weight < 0 , "red", "grey80")
-igplot(ig = g2, v.s = 15, e.c = ecol, e.w = ewid*4)
-
+ ecol <-  ifelse(igraph::E(g2)$weight < 0 , "steelblue3", "grey80")
+igplot(ig = g2, lay=igraph::layout.circle, v.s = 15, e.c = ecol, e.w = ewid*4)
 }
