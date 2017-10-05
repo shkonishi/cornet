@@ -15,6 +15,10 @@ gethub(g, com_fun)
 get hub node.
 }
 \examples{
-##
-
+# sample data
+data(cluster_dat)
+cormat <- cor(cluster_dat[[2]])
+res <- corgraph(mat = cormat)
+g <- res[[1]]
+gethub(g=g, com_fun="fastgreedy.community")
 }

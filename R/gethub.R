@@ -4,8 +4,12 @@
 #' @param g igraph object
 #' @param com_fun character: function name of igraph for community detection
 #' @examples
-#' ##
-#'
+#' # sample data
+#' data(cluster_dat)
+#' cormat <- cor(cluster_dat[[2]])
+#' res <- corgraph(mat = cormat)
+#' g <- res[[1]]
+#' gethub(g=g, com_fun="fastgreedy.community")
 #' @importFrom igraph delete.vertices degree fastgreedy.community cluster_louvain delete.vertices V E vcount degree betweenness
 #' @importFrom grDevices adjustcolor
 #' @importFrom RColorBrewer brewer.pal
@@ -95,7 +99,7 @@ gethub <- function(g, com_fun){
     }
   }
   ))
-  cornet::igplot(cong, v.c = vcols, v.l = NA, v.s = degree(cong)/vcount(cong)*100)
+  cornet::igplot(cong, v.c = vcols, v.l = NA)
   return(sortresult)
 }
 
