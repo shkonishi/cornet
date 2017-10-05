@@ -1,5 +1,6 @@
 #' Construction of a network graph from correlation matxix
 #' @description  Construction of a correlation network graph from correlation matrix through Random Matrix Theory-based methods.
+#'    if negetive correlation exists, these information were added to result of igraph object.
 #' @usage corgraph(mat, it = seq(0.30,0.99,by=0.01))
 #' @return A list consists from one igraph object and two dataframes. The one is a weighted edge list, the another one is
 #'     a result from ks-test of difference eigen sequence based on thresh correlation matrix.
@@ -13,11 +14,11 @@
 #' res[[1]]
 #' head(res[[2]])
 #' head(res[[3]])
-#' @importFrom igraph graph.edgelist
+#' @importFrom igraph get.edge.ids graph.adjacency
 #' @export
 corgraph <- function(mat, it = seq(0.30,0.99,by=0.01)){
   diag(mat) <- 0
-  mtx <- abs(mat)
+  mtx <- abs(mat) # absolute mat
   res.ks <- lapply(it,
                    function(i){
                      mtx_tmp <- ifelse(mtx > i, mtx,0)
@@ -37,9 +38,21 @@ corgraph <- function(mat, it = seq(0.30,0.99,by=0.01)){
                            ks_p = as.numeric(sapply(res.ks, "[",2)),
                            stringsAsFactors = F)
   th <- res.ks.dat$thresh[which.min(res.ks.dat$ks_d)]
+  pv <- res.ks.dat$ks_p[which.min(res.ks.dat$ks_d)]
+  print(paste0("thresh:", th,  "  p:", pv))
 
-  mtx_opt <- ifelse(mat > th | mat < -th, mat, 0)
-  edgel <- cornet::matoedge(mtx_opt, format = "df")
-  g <- igraph::graph.edgelist(as.matrix(edgel[edgel$value != 0, 1:2]), directed = F )
-  return(list(undir.graph = g, edge.list=edgel, res.ks.text=res.ks.dat))
+  # adjmat for igraph
+  mtx_opt <- ifelse(mtx > th, 1, 0)
+  # create igraph object
+  g <- igraph::graph.adjacency(adjmatrix = mtx_opt, mode = "undirected", diag = F)
+
+  # negative correlation edge to matrix for searching edge from igraph object
+  nedgel <- matoedge(ifelse(mat > th | mat < -th, mat, 0), format = "df")
+  nedge.mt <-  # negative correlation edge mat
+  nedge.pos <- igraph::get.edge.ids(g, as.vector(t(nedgel[nedgel$value < 0, 1:2])))
+
+
+  igraph::E(g)$color <-
+    ifelse(igraph::E(g) %in% igraph::E(g)[nedge.pos], "red", "grey80")
+  return(list(undir.graph = g, edge.list = nedgel, res.ks.text=res.ks.dat))
 }

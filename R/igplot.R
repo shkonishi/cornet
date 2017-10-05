@@ -1,10 +1,11 @@
 #' simple plot of igraph object
-#' @description several options has initial value, and
-#' @usage igplot(ig, lay, v.l, v.l.c, v.f.c, v.s, v.c, e.c, e.w, e.lty, ...)
+#' @description Shortening several 'plot.igraph' options, and these has initial value.
+#' @usage igplot(ig, lay, v.l, v.l.c, v.f.c, v.s, v.c, e.c, e.w, e.lty, decomp, ...)
 #' @param ig igraph object
-#' @param lay graph layout, if 'lay="all"', all graph layout was performed.
+#' @param lay layout function of igraph, if 'lay="all"', all layout functions were performed.
 #' @param v.c,v.f.c,v.l,v.l.c,v.s vertex parameters, v.c(vertex.color), v.f(vertex.frame.color), v.l(vertex.label), v.l.c(vertex.label.color), v.s(vertex.size)
 #' @param e.c,e.w,e.lty edge parameters, e.c(edge.color), e.w(edge.width), e.lty(edge.lty)
+#' @param decomp logical: one node graph object are omitted. default is TRUE
 #' @param ... other arguments of plot.igraph
 #' @examples
 #' # sample data
@@ -28,12 +29,21 @@
 #'  ewid <- abs(igraph::E(g2)$weight)
 #'  ecol <-  ifelse(igraph::E(g2)$weight < 0 , "steelblue3", "grey80")
 #' igplot(ig = g2, lay=igraph::layout.circle, v.s = 15, e.c = ecol, e.w = ewid*4)
-#' @importFrom igraph layout_nicely V E layout.auto layout.bipartite layout.circle layout.davidson.harel layout.drl layout.fruchterman.reingold layout.fruchterman.reingold.grid layout.gem layout.graphopt layout.grid layout.grid.3d layout.kamada.kawai layout.lgl layout.mds layout.merge layout.norm layout.random layout.reingold.tilford layout.sphere layout.spring layout.star layout.sugiyama layout.svd
+#' @importFrom igraph graph.union decompose.graph components layout_nicely V E layout.auto layout.bipartite layout.circle layout.davidson.harel layout.drl layout.fruchterman.reingold layout.fruchterman.reingold.grid layout.gem layout.graphopt layout.grid layout.grid.3d layout.kamada.kawai layout.lgl layout.mds layout.merge layout.norm layout.random layout.reingold.tilford layout.sphere layout.spring layout.star layout.sugiyama layout.svd
 #' @importFrom utils lsf.str
 #' @export
 igplot <- function(ig, lay = igraph::layout_nicely, v.l=igraph::V(ig)$name,
                         v.l.c = "white", v.f.c="white", v.s = 5, v.c = "cornsilk4",
                         e.c = "grey80", e.w = 1, e.lty = 1, ...){
+
+  # # select connected components
+  # if (decomp == TRUE & any(components(ig)$csize ==1)){
+  #   ig <- igraph::graph.union(igraph::decompose(ig)[sort(which(igraph::components(ig)$csize > 1), decreasing = T)])
+  # }
+
+  # if igraph object has attibutes of vertices and edge, intial value was replaced.
+  v.c <- if(!is.null(V(ig)$color)){V(ig)$color}else{v.c}
+  e.c <- if(!is.null(E(ig)$color)){E(ig)$color}else{e.c}
 
   if (!is.function(lay)){
     if (lay == "all"){
@@ -54,12 +64,12 @@ igplot <- function(ig, lay = igraph::layout_nicely, v.l=igraph::V(ig)$name,
             print(paste("Error in layout ",x,sep = ""))
           }
           )
-          if(inherits(possibleError, "error")) next
+          if (inherits(possibleError, "error")) next
         }
       )
     }
-  } else{
-    par(mar=c(0,0,0,0))
+  } else {
+    par(mar=c(0,0,1,0))
     plot(ig, layout=lay, vertex.label = v.l, vertex.label.color = v.l.c,
          vertex.frame.color=v.f.c, vertex.size = v.s, vertex.color = v.c,
          edge.color = e.c, edge.width = e.w, edge.lty=e.lty, ...

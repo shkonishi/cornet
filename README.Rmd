@@ -15,7 +15,6 @@ library(cornet)
 ls("package:cornet")
 ```
 
-
 ### data
 - 正規化した遺伝子発現データ(行:遺伝子, 列:サンプル)
 ```{r}
@@ -120,7 +119,7 @@ cornet::igplot(ig = g2, lay=igraph::layout.circle, v.s = 15, e.c = ecol, e.w = e
 
 #### all layout test
 - layoutの関数を取得して全てplot
-- データの種類によってはerrorになる
+- データの種類とlayout関数の組み合わせによってはerrorになる
 ```{r fig.width=12, fig.height=10}
 par(mfrow = c(4,4))
 cornet::igplot(ig = g1, lay = "all", v.s = igraph::degree(g1)*10)

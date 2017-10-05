@@ -4,21 +4,23 @@
 \alias{igplot}
 \title{simple plot of igraph object}
 \usage{
-igplot(ig, lay, v.l, v.l.c, v.f.c, v.s, v.c, e.c, e.w, e.lty, ...)
+igplot(ig, lay, v.l, v.l.c, v.f.c, v.s, v.c, e.c, e.w, e.lty, decomp, ...)
 }
 \arguments{
 \item{ig}{igraph object}
 
-\item{lay}{graph layout, if 'lay="all"', all graph layout was performed.}
+\item{lay}{layout function of igraph, if 'lay="all"', all layout functions were performed.}
 
 \item{v.c, v.f.c, v.l, v.l.c, v.s}{vertex parameters, v.c(vertex.color), v.f(vertex.frame.color), v.l(vertex.label), v.l.c(vertex.label.color), v.s(vertex.size)}
 
 \item{e.c, e.w, e.lty}{edge parameters, e.c(edge.color), e.w(edge.width), e.lty(edge.lty)}
 
+\item{decomp}{logical: one node graph object are omitted. default is TRUE}
+
 \item{...}{other arguments of plot.igraph}
 }
 \description{
-several options has initial value, and
+Shortening several 'plot.igraph' options, and these has initial value.
 }
 \examples{
 # sample data

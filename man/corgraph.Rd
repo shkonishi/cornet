@@ -17,6 +17,7 @@ A list consists from one igraph object and two dataframes. The one is a weighted
 }
 \description{
 Construction of a correlation network graph from correlation matrix through Random Matrix Theory-based methods.
+   if negetive correlation exists, these information were added to result of igraph object.
 }
 \examples{
 # sample data

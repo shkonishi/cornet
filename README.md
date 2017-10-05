@@ -123,14 +123,18 @@ cormat <- cor(cluster_dat[[1]])
 
 # グラフ作成
 res <- corgraph(mat = cormat)
+```
 
+    ## [1] "thresh:0.93  p:0"
+
+``` r
 # 返り値1. igraphオブジェクト
 (g <- res$undir.graph)
 ```
 
-    ## IGRAPH 335aab2 UN-- 120 1605 -- 
+    ## IGRAPH 1752f5c UN-- 120 1605 -- 
     ## + attr: name (v/c)
-    ## + edges from 335aab2 (vertex names):
+    ## + edges from 1752f5c (vertex names):
     ##  [1] gene158--gene838 gene765--gene118 gene765--gene871 gene765--gene189
     ##  [5] gene765--gene818 gene838--gene118 gene686--gene770 gene910--gene271
     ##  [9] gene910--gene416 gene910--gene278 gene910--gene254 gene271--gene510
@@ -191,6 +195,11 @@ cormat <- round(cor(t(dat)),2)
 ``` r
 # threshold graph
 res <- cornet::corgraph(mat=cormat)
+```
+
+    ## [1] "thresh:0.95  p:0.916883357943937"
+
+``` r
 g1 <- res[[1]]
 cornet::igplot(ig = g1, v.s = 15)
 ```
@@ -211,7 +220,7 @@ cornet::igplot(ig = g2, lay=igraph::layout.circle, v.s = 15, e.c = ecol, e.w = e
 #### all layout test
 
 -   layoutの関数を取得して全てplot
--   データの種類によってはerrorになる
+-   データの種類とlayout関数の組み合わせによってはerrorになる
 
 ``` r
 par(mfrow = c(4,4))
