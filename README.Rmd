@@ -82,49 +82,65 @@ head(res$edge.list)
 # 返り値3. ks-testの結果
 head(res$res.ks.text)
 
+# graphオブジェクトのみ作成
+cl_g <- lapply(cluster_dat, function(x)corgraph(cor(x))[[1]])
+
 ```
 
 ### igplot
 igraphオブジェクトをプロットする。たくさんあるパラメータの表記をできるだけ省略したいので、よく使うオプションは初期値を指定してある。大雑把に視覚化したい時に使う。
-
-#### sample data
+#### サンプルデータ
 ```{r}
-# sample data
 dat <- data.frame(
- S1 =c(43.26, 166.6, 12.53, 28.77, 114.7, 119.1, 118.9, 3.76, 32.73, 17.46),
- S2=c(40.89, 41.87, 39.55, 191.92, 79.7, 80.57, 156.69, 2.48, 11.99, 56.11),
- S3=c(5.05, 136.65, 42.09, 236.56, 99.76, 114.59, 186.95, 136.78, 118.8, 21.41)
+ S1 = c(43.26, 166.6, 12.53, 28.77, 114.7, 119.1, 118.9, 3.76, 32.73, 17.46),
+ S2 = c(40.89, 41.87, 39.55, 191.92, 79.7, 80.57, 156.69, 2.48, 11.99, 56.11),
+ S3 = c(5.05, 136.65, 42.09, 236.56, 99.76, 114.59, 186.95, 136.78, 118.8, 21.41)
  )
 rownames(dat) <- paste0("G", 1:10)
+```
 
-# correlation matrix
+#### グラフ作成と描画
+- `corgraph`を使って閾値を元にグラフ作成する場合と`matoedge`を使って完全グラフを作る場合
+```{r fig.height=6, fig.width=12}
+# グラフ作成
 cormat <- round(cor(t(dat)),2)
-```
-
-#### 閾値グラフ
-```{r}
-# threshold graph
-res <- cornet::corgraph(mat=cormat)
-g1 <- res[[1]]
-cornet::igplot(ig = g1, v.s = 15)
-```
-
-##### 完全グラフ
-```{r fig.height=6, fig.width=6}
+g1 <- corgraph(cormat)[[1]]
 g2 <- cornet::matoedge(cormat)
+
+# 閾値グラフ
+par(mfrow=c(1,2))
+igplot(g1, v.s = igraph::degree(g1)*10)
+
+# 完全グラフ
 ewid <- abs(igraph::E(g2)$weight)
 ecol <-  ifelse(igraph::E(g2)$weight < 0 , "steelblue3", "grey80")
-cornet::igplot(ig = g2, lay=igraph::layout.circle, v.s = 15, e.c = ecol, e.w = ewid*4)
+igplot(ig = g2, lay=igraph::layout.circle, v.s = 15, e.c = ecol, e.w = ewid*4)
 ```
 
-#### all layout test
-- layoutの関数を取得して全てplot
+
+#### corgraphの結果を描画する場合
+```{r fig.width=12, fig.height=6}
+par(mfrow=c(1,4))
+invisible(lapply(cl_g, function(x)igplot(ig = x, v.s = 7, v.l = NA)))
+
+```
+
+#### 色々なレイアウト関数を試す
+- igraphのlayoutの関数を取得して全てplot
 - データの種類とlayout関数の組み合わせによってはerrorになる
 ```{r fig.width=12, fig.height=10}
 par(mfrow = c(4,4))
 cornet::igplot(ig = g1, lay = "all", v.s = igraph::degree(g1)*10)
 
 ```
+
+### gethub
+- ノードごとに中心性解析の結果を調べる
+```{r}
+res.hub <- gethub(g = cl_g[[2]], com_fun = "cluster_louvain")
+head(res.hub)
+```
+
 
 ### cluster_mine
 非線形の関連を見つける。`minerva::mine`を実行して、その結果を整形してdataframeで返す

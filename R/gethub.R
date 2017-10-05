@@ -13,6 +13,7 @@
 #' @importFrom igraph delete.vertices degree fastgreedy.community cluster_louvain delete.vertices V E vcount degree betweenness
 #' @importFrom grDevices adjustcolor
 #' @importFrom RColorBrewer brewer.pal
+#' @importFrom graphics legend
 #' @export
 gethub <- function(g, com_fun){
   com.algs <- c("fastgreedy.community", "cluster_louvain")
@@ -100,6 +101,10 @@ gethub <- function(g, com_fun){
   }
   ))
   cornet::igplot(cong, v.c = vcols, v.l = NA)
+  graphics::legend("topright",
+         legend = c("R7:Kinless hubs", "R6:Connector hubs", "R5:Provincial hubs",
+                    "R4:Non-hub kinless nodes", "R3:Non-hub connectors"),
+         bg = "transparent",pch = 20, col = vcol, cex = 0.8)
   return(sortresult)
 }
 

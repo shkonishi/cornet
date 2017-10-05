@@ -18,7 +18,7 @@ ls("package:cornet")
 ```
 
     ## [1] "cluster_dat"  "cluster_mat"  "cluster_mine" "corgraph"    
-    ## [5] "corheat"      "igplot"       "matoedge"
+    ## [5] "corheat"      "gethub"       "igplot"       "matoedge"
 
 ### data
 
@@ -132,17 +132,17 @@ res <- corgraph(mat = cormat)
 (g <- res$undir.graph)
 ```
 
-    ## IGRAPH 1752f5c UN-- 120 1605 -- 
-    ## + attr: name (v/c)
-    ## + edges from 1752f5c (vertex names):
+    ## IGRAPH 259a4d8 UN-- 239 1605 -- 
+    ## + attr: name (v/c), color (e/c)
+    ## + edges from 259a4d8 (vertex names):
     ##  [1] gene158--gene838 gene765--gene118 gene765--gene871 gene765--gene189
-    ##  [5] gene765--gene818 gene838--gene118 gene686--gene770 gene910--gene271
-    ##  [9] gene910--gene416 gene910--gene278 gene910--gene254 gene271--gene510
-    ## [13] gene416--gene510 gene510--gene281 gene271--gene416 gene271--gene278
+    ##  [5] gene765--gene818 gene118--gene838 gene686--gene770 gene910--gene271
+    ##  [9] gene910--gene416 gene910--gene278 gene910--gene254 gene510--gene271
+    ## [13] gene510--gene416 gene510--gene281 gene271--gene416 gene271--gene278
     ## [17] gene271--gene964 gene271--gene281 gene271--gene971 gene416--gene278
     ## [21] gene416--gene281 gene563--gene270 gene563--gene246 gene563--gene920
-    ## [25] gene278--gene563 gene563--gene67  gene563--gene371 gene190--gene220
-    ## [29] gene270--gene190 gene220--gene709 gene220--gene977 gene270--gene220
+    ## [25] gene563--gene278 gene563--gene67  gene563--gene371 gene190--gene220
+    ## [29] gene190--gene270 gene220--gene709 gene220--gene977 gene220--gene270
     ## + ... omitted several edges
 
 ``` r
@@ -171,55 +171,68 @@ head(res$res.ks.text)
     ## 5   0.34 0.8865022    0
     ## 6   0.35 0.8853600    0
 
-### igplot
-
-igraphオブジェクトをプロットする。たくさんあるパラメータの表記をできるだけ省略したいので、よく使うオプションは初期値を指定してある。大雑把に視覚化したい時に使う。
-
-#### sample data
-
 ``` r
-# sample data
-dat <- data.frame(
- S1 =c(43.26, 166.6, 12.53, 28.77, 114.7, 119.1, 118.9, 3.76, 32.73, 17.46),
- S2=c(40.89, 41.87, 39.55, 191.92, 79.7, 80.57, 156.69, 2.48, 11.99, 56.11),
- S3=c(5.05, 136.65, 42.09, 236.56, 99.76, 114.59, 186.95, 136.78, 118.8, 21.41)
- )
-rownames(dat) <- paste0("G", 1:10)
-
-# correlation matrix
-cormat <- round(cor(t(dat)),2)
+# graphオブジェクトのみ作成
+cl_g <- lapply(cluster_dat, function(x)corgraph(cor(x))[[1]])
 ```
 
-#### 閾値グラフ
+    ## [1] "thresh:0.93  p:0"
+    ## [1] "thresh:0.89  p:7.01882996168024e-13"
+    ## [1] "thresh:0.7  p:5.29423700434961e-08"
+    ## [1] "thresh:0.75  p:0.00679881495728263"
+
+### igplot
+
+igraphオブジェクトをプロットする。たくさんあるパラメータの表記をできるだけ省略したいので、よく使うオプションは初期値を指定してある。大雑把に視覚化したい時に使う。 \#\#\#\# サンプルデータ
 
 ``` r
-# threshold graph
-res <- cornet::corgraph(mat=cormat)
+dat <- data.frame(
+ S1 = c(43.26, 166.6, 12.53, 28.77, 114.7, 119.1, 118.9, 3.76, 32.73, 17.46),
+ S2 = c(40.89, 41.87, 39.55, 191.92, 79.7, 80.57, 156.69, 2.48, 11.99, 56.11),
+ S3 = c(5.05, 136.65, 42.09, 236.56, 99.76, 114.59, 186.95, 136.78, 118.8, 21.41)
+ )
+rownames(dat) <- paste0("G", 1:10)
+```
+
+#### グラフ作成と描画
+
+-   `corgraph`を使って閾値を元にグラフ作成する場合と`matoedge`を使って完全グラフを作る場合
+
+``` r
+# グラフ作成
+cormat <- round(cor(t(dat)),2)
+g1 <- corgraph(cormat)[[1]]
 ```
 
     ## [1] "thresh:0.95  p:0.916883357943937"
 
 ``` r
-g1 <- res[[1]]
-cornet::igplot(ig = g1, v.s = 15)
+g2 <- cornet::matoedge(cormat)
+
+# 閾値グラフ
+par(mfrow=c(1,2))
+igplot(g1, v.s = igraph::degree(g1)*10)
+
+# 完全グラフ
+ewid <- abs(igraph::E(g2)$weight)
+ecol <-  ifelse(igraph::E(g2)$weight < 0 , "steelblue3", "grey80")
+igplot(ig = g2, lay=igraph::layout.circle, v.s = 15, e.c = ecol, e.w = ewid*4)
 ```
 
 ![](README_files/figure-markdown_github-ascii_identifiers/unnamed-chunk-8-1.png)
 
-##### 完全グラフ
+#### corgraphの結果を描画する場合
 
 ``` r
-g2 <- cornet::matoedge(cormat)
-ewid <- abs(igraph::E(g2)$weight)
-ecol <-  ifelse(igraph::E(g2)$weight < 0 , "steelblue3", "grey80")
-cornet::igplot(ig = g2, lay=igraph::layout.circle, v.s = 15, e.c = ecol, e.w = ewid*4)
+par(mfrow=c(1,4))
+invisible(lapply(cl_g, function(x)igplot(ig = x, v.s = 7, v.l = NA)))
 ```
 
 ![](README_files/figure-markdown_github-ascii_identifiers/unnamed-chunk-9-1.png)
 
-#### all layout test
+#### 色々なレイアウト関数を試す
 
--   layoutの関数を取得して全てplot
+-   igraphのlayoutの関数を取得して全てplot
 -   データの種類とlayout関数の組み合わせによってはerrorになる
 
 ``` r
@@ -237,6 +250,35 @@ cornet::igplot(ig = g1, lay = "all", v.s = igraph::degree(g1)*10)
     ## [1] "Error in layout layout.sugiyama"
 
 ![](README_files/figure-markdown_github-ascii_identifiers/unnamed-chunk-10-2.png)
+
+### gethub
+
+-   ノードごとに中心性解析の結果を調べる
+
+``` r
+res.hub <- gethub(g = cl_g[[2]], com_fun = "cluster_louvain")
+```
+
+![](README_files/figure-markdown_github-ascii_identifiers/unnamed-chunk-11-1.png)
+
+``` r
+head(res.hub)
+```
+
+    ##            node  between degree   ndegree within_module_degree
+    ## gene847 gene847 353.1202     19 0.1759259            0.9169092
+    ## gene897 gene897 341.3252     13 0.1203704            2.5751852
+    ## gene829 gene829 313.1011     34 0.3148148            1.7192048
+    ## gene483 gene483 242.2719     22 0.2037037            0.9169092
+    ## gene558 gene558 219.9055     30 0.2777778            1.6972270
+    ## gene466 gene466 212.1991     32 0.2962963            1.7192048
+    ##         participation_coefficient                 role
+    ## gene847                 0.3878116 R2: Peripheral nodes
+    ## gene897                 0.3550296   R6: Connector hubs
+    ## gene829                 0.6159170 R2: Peripheral nodes
+    ## gene483                 0.4917355 R2: Peripheral nodes
+    ## gene558                 0.6066667 R2: Peripheral nodes
+    ## gene466                 0.5878906 R2: Peripheral nodes
 
 ### cluster\_mine
 

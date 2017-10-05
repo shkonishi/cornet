@@ -48,9 +48,8 @@ corgraph <- function(mat, it = seq(0.30,0.99,by=0.01)){
 
   # negative correlation edge to matrix for searching edge from igraph object
   nedgel <- matoedge(ifelse(mat > th | mat < -th, mat, 0), format = "df")
-  nedge.mt <-  # negative correlation edge mat
+  #nedge.mt <-  # negative correlation edge mat
   nedge.pos <- igraph::get.edge.ids(g, as.vector(t(nedgel[nedgel$value < 0, 1:2])))
-
 
   igraph::E(g)$color <-
     ifelse(igraph::E(g) %in% igraph::E(g)[nedge.pos], "red", "grey80")

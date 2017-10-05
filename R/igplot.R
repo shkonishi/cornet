@@ -1,8 +1,9 @@
 #' simple plot of igraph object
 #' @description Shortening several 'plot.igraph' options, and these has initial value.
-#' @usage igplot(ig, lay, v.l, v.l.c, v.f.c, v.s, v.c, e.c, e.w, e.lty, ...)
+#' @usage igplot(ig, lay, connected, v.l, v.l.c, v.f.c, v.s, v.c, e.c, e.w, e.lty, ...)
 #' @param ig igraph object
 #' @param lay layout function of igraph, if 'lay="all"', all layout functions were performed.
+#' @param connected logical: default is true, connected vertex was shown.
 #' @param v.c,v.f.c,v.l,v.l.c,v.s vertex parameters, v.c(vertex.color), v.f(vertex.frame.color), v.l(vertex.label), v.l.c(vertex.label.color), v.s(vertex.size)
 #' @param e.c,e.w,e.lty edge parameters, e.c(edge.color), e.w(edge.width), e.lty(edge.lty)
 #' @param ... other arguments of plot.igraph
@@ -31,13 +32,19 @@
 #' @importFrom igraph graph.union decompose.graph components layout_nicely V E layout.auto layout.bipartite layout.circle layout.davidson.harel layout.drl layout.fruchterman.reingold layout.fruchterman.reingold.grid layout.gem layout.graphopt layout.grid layout.grid.3d layout.kamada.kawai layout.lgl layout.mds layout.merge layout.norm layout.random layout.reingold.tilford layout.sphere layout.spring layout.star layout.sugiyama layout.svd
 #' @importFrom utils lsf.str
 #' @export
-igplot <- function(ig, lay = igraph::layout_nicely, v.l=igraph::V(ig)$name,
-                        v.l.c = "white", v.f.c="white", v.s = 5, v.c = "cornsilk4",
-                        e.c = "grey80", e.w = 1, e.lty = 1, ...){
+igplot <- function(ig, lay = igraph::layout_nicely, connected = TRUE,
+                   v.l = igraph::V(ig)$name, v.l.c = "white", v.f.c = "white",
+                   v.s = 5, v.c = "#8B887880",
+                   e.c = "grey80", e.w = 1, e.lty = 1, ...){
 
   # if igraph object has attibutes of vertices and edge, intial value was replaced.
   v.c <- if(!is.null(V(ig)$color)){V(ig)$color}else{v.c}
   e.c <- if(!is.null(E(ig)$color)){E(ig)$color}else{e.c}
+
+  # Only connected vertex was shown
+  if (connected == TRUE){
+    ig <- delete.vertices(ig, V(ig)$name[degree(ig)==0])
+  }
 
   if (!is.function(lay)){
     if (lay == "all"){
