@@ -1,10 +1,11 @@
-#' node centrality
-#' @description hub do.
+#' Node centrality
+#' @description get hub node.
 #' @usage gethub(g, com_fun)
 #' @param g igraph object
 #' @param com_fun character: function name of igraph for community detection
 #' @examples
 #' ##
+#'
 #' @importFrom igraph delete.vertices degree fastgreedy.community cluster_louvain delete.vertices V E vcount degree betweenness
 #' @importFrom grDevices adjustcolor
 #' @importFrom RColorBrewer brewer.pal

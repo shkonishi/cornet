@@ -2,7 +2,7 @@
 % Please edit documentation in R/gethub.R
 \name{gethub}
 \alias{gethub}
-\title{node centrality}
+\title{Node centrality}
 \usage{
 gethub(g, com_fun)
 }
@@ -12,8 +12,9 @@ gethub(g, com_fun)
 \item{com_fun}{character: function name of igraph for community detection}
 }
 \description{
-hub do.
+get hub node.
 }
 \examples{
 ##
+
 }

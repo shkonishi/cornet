@@ -35,11 +35,6 @@ igplot <- function(ig, lay = igraph::layout_nicely, v.l=igraph::V(ig)$name,
                         v.l.c = "white", v.f.c="white", v.s = 5, v.c = "cornsilk4",
                         e.c = "grey80", e.w = 1, e.lty = 1, ...){
 
-  # # select connected components
-  # if (decomp == TRUE & any(components(ig)$csize ==1)){
-  #   ig <- igraph::graph.union(igraph::decompose(ig)[sort(which(igraph::components(ig)$csize > 1), decreasing = T)])
-  # }
-
   # if igraph object has attibutes of vertices and edge, intial value was replaced.
   v.c <- if(!is.null(V(ig)$color)){V(ig)$color}else{v.c}
   e.c <- if(!is.null(E(ig)$color)){E(ig)$color}else{e.c}
