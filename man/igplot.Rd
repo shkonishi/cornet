@@ -4,7 +4,7 @@
 \alias{igplot}
 \title{simple plot of igraph object}
 \usage{
-igplot(ig, lay, v.l, v.l.c, v.f.c, v.s, v.c, e.c, e.w, e.lty, decomp, ...)
+igplot(ig, lay, v.l, v.l.c, v.f.c, v.s, v.c, e.c, e.w, e.lty, ...)
 }
 \arguments{
 \item{ig}{igraph object}
@@ -14,8 +14,6 @@ igplot(ig, lay, v.l, v.l.c, v.f.c, v.s, v.c, e.c, e.w, e.lty, decomp, ...)
 \item{v.c, v.f.c, v.l, v.l.c, v.s}{vertex parameters, v.c(vertex.color), v.f(vertex.frame.color), v.l(vertex.label), v.l.c(vertex.label.color), v.s(vertex.size)}
 
 \item{e.c, e.w, e.lty}{edge parameters, e.c(edge.color), e.w(edge.width), e.lty(edge.lty)}
-
-\item{decomp}{logical: one node graph object are omitted. default is TRUE}
 
 \item{...}{other arguments of plot.igraph}
 }

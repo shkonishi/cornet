@@ -1,11 +1,10 @@
 #' simple plot of igraph object
 #' @description Shortening several 'plot.igraph' options, and these has initial value.
-#' @usage igplot(ig, lay, v.l, v.l.c, v.f.c, v.s, v.c, e.c, e.w, e.lty, decomp, ...)
+#' @usage igplot(ig, lay, v.l, v.l.c, v.f.c, v.s, v.c, e.c, e.w, e.lty, ...)
 #' @param ig igraph object
 #' @param lay layout function of igraph, if 'lay="all"', all layout functions were performed.
 #' @param v.c,v.f.c,v.l,v.l.c,v.s vertex parameters, v.c(vertex.color), v.f(vertex.frame.color), v.l(vertex.label), v.l.c(vertex.label.color), v.s(vertex.size)
 #' @param e.c,e.w,e.lty edge parameters, e.c(edge.color), e.w(edge.width), e.lty(edge.lty)
-#' @param decomp logical: one node graph object are omitted. default is TRUE
 #' @param ... other arguments of plot.igraph
 #' @examples
 #' # sample data
