@@ -4,24 +4,24 @@
 \alias{cluster_mat}
 \title{Cluster_mat}
 \usage{
-cluster_mat(dat, distm, clm, column, method_dycut, y_fctr, x_fctr, rep_fctr, ...)
+cluster_mat(dat, distm, clm, column, method_dycut, x_fctr, y_fctr, rep_fctr, ...)
 }
 \arguments{
 \item{dat}{data frame or matrix}
 
-\item{distm}{distance measure from amap::Dist options}
+\item{distm}{distance measure from amap::Dist options. default is "pearson"}
 
-\item{clm}{clustering method select from hclust options}
+\item{clm}{clustering method select from hclust options default is "average"}
 
 \item{column}{column which containing expression data default 'column=1:ncol(dat)'}
 
 \item{method_dycut}{method of dynamic cut}
 
-\item{y_fctr}{optional}
-
 \item{x_fctr}{x-axis factor for ggplot object like matplot}
 
-\item{rep_fctr}{optional}
+\item{y_fctr}{optional default is NA}
+
+\item{rep_fctr}{optional default is NA}
 
 \item{...}{additional dynamicTreeCut::cutreeDynamic options}
 }

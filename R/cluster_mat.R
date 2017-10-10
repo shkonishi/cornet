@@ -1,14 +1,14 @@
 #' Cluster_mat
 #' @description Cluster_mat
-#' @usage cluster_mat(dat, distm, clm, column, method_dycut, y_fctr, x_fctr, rep_fctr, ...)
+#' @usage cluster_mat(dat, distm, clm, column, method_dycut, x_fctr, y_fctr, rep_fctr, ...)
 #' @param dat data frame or matrix
-#' @param distm distance measure from amap::Dist options
-#' @param clm clustering method select from hclust options
+#' @param distm distance measure from amap::Dist options. default is "pearson"
+#' @param clm clustering method select from hclust options default is "average"
 #' @param column column which containing expression data default 'column=1:ncol(dat)'
 #' @param method_dycut method of dynamic cut
 #' @param x_fctr x-axis factor for ggplot object like matplot
-#' @param y_fctr optional
-#' @param rep_fctr optional
+#' @param y_fctr optional default is NA
+#' @param rep_fctr optional default is NA
 #' @param ... additional dynamicTreeCut::cutreeDynamic options
 #' @examples
 #' d <- data.frame(t(iris[-5]))
@@ -49,7 +49,8 @@
 #' @importFrom graphics barplot layout layout.show par plot text
 #' @importFrom stats sd hclust as.dendrogram median
 #' @export
-cluster_mat <- function(dat, distm, clm, column=1:ncol(dat), method_dycut, y_fctr, x_fctr, rep_fctr, ...){
+#'
+cluster_mat <- function(dat, distm="pearson", clm="average", column=1:ncol(dat), method_dycut="tree", x_fctr, y_fctr=NA, rep_fctr=NA, ...){
   # argument check: dat ----
   if (class(dat)=="data.frame"){
     mat <- dat[column]
