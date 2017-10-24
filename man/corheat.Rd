@@ -28,10 +28,7 @@ Gene clustering for RNA-seq data and cutting cluster with dynamic cut
 fp <- system.file("extdata/nfpkm_200.txt", package = "cornet")
 nfpkm <- read.table(fp, header=TRUE, stringsAsFactors = FALSE)
 
-# sampling 200 genes
-dat <- nfpkm[,sample(5:ncol(nfpkm), 200)]
-
 # corheat with dynamic tree cut
-res <- corheat(dat=dat, distm="spearman", clm="average", method_dycut="tree", draw=TRUE)
+res <- corheat(dat=nfpkm[-1:-4], distm="spearman", clm="average", method_dycut="tree", draw=TRUE)
 
 }

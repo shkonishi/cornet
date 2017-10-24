@@ -19,7 +19,7 @@
 #' nfpkm <- read.table(fp, header=TRUE, stringsAsFactors = FALSE)
 #'
 #' # corheat with dynamic tree cut
-#' res <- corheat(dat=dat, distm="spearman", clm="average", method_dycut="tree", draw=TRUE)
+#' res <- corheat(dat=nfpkm[-1:-4], distm="spearman", clm="average", method_dycut="tree", draw=TRUE)
 #'
 #' @export
 corheat <- function(dat, distm, clm, method_dycut, draw){
