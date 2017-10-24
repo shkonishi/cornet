@@ -15,11 +15,8 @@
 #' @importFrom stats as.dist cor
 #' @examples
 #' # data: normalized fpkm
-#' fp <- system.file("extdata/nfpkm_rnsq.txt", package = "rsko")
+#' fp <- system.file("extdata/nfpkm_200.txt", package = "cornet")
 #' nfpkm <- read.table(fp, header=TRUE, stringsAsFactors = FALSE)
-#'
-#' # sampling 200 genes
-#' dat <- nfpkm[,sample(5:ncol(nfpkm), 200)]
 #'
 #' # corheat with dynamic tree cut
 #' res <- corheat(dat=dat, distm="spearman", clm="average", method_dycut="tree", draw=TRUE)

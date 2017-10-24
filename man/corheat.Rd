@@ -25,7 +25,7 @@ Gene clustering for RNA-seq data and cutting cluster with dynamic cut
 }
 \examples{
 # data: normalized fpkm
-fp <- system.file("extdata/nfpkm_rnsq.txt", package = "rsko")
+fp <- system.file("extdata/nfpkm_200.txt", package = "cornet")
 nfpkm <- read.table(fp, header=TRUE, stringsAsFactors = FALSE)
 
 # sampling 200 genes
