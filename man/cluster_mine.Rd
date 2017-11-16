@@ -18,7 +18,7 @@ The result of mine is multi matrix of all node pairs, and that is too many memor
 }
 \examples{
 # sample data, result of 'cluster_mat'
-data("cluster_dat")
-res <- cluster_mine(cl_dat=cluster_dat[[3]])
+# data("cluster_dat")
+#
 
 }

@@ -31,6 +31,7 @@
 #' igplot(ig = g2, lay=igraph::layout.circle, v.s = 15, e.c = ecol, e.w = ewid*4)
 #' @importFrom igraph graph.union decompose.graph components layout_nicely V E layout.auto layout.bipartite layout.circle layout.davidson.harel layout.drl layout.fruchterman.reingold layout.fruchterman.reingold.grid layout.gem layout.graphopt layout.grid layout.grid.3d layout.kamada.kawai layout.lgl layout.mds layout.merge layout.norm layout.random layout.reingold.tilford layout.sphere layout.spring layout.star layout.sugiyama layout.svd
 #' @importFrom utils lsf.str
+#' @importFrom graphics par plot
 #' @export
 igplot <- function(ig, lay = igraph::layout_nicely, connected = TRUE,
                    v.l = igraph::V(ig)$name, v.l.c = "white", v.f.c = "white",

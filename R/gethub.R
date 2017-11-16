@@ -13,12 +13,14 @@
 #' @importFrom igraph delete.vertices degree fastgreedy.community cluster_louvain delete.vertices V E vcount degree betweenness
 #' @importFrom grDevices adjustcolor
 #' @importFrom RColorBrewer brewer.pal
+#' @importFrom stats sd setNames
 #' @importFrom graphics legend
 #' @export
 gethub <- function(g, com_fun){
+  # g <- glist[[1]]; com_fun <- "cluster_louvain"
   com.algs <- c("fastgreedy.community", "cluster_louvain")
   if(any(com.algs %in% com_fun)){
-    commu <- eval(parse(text=paste0(com_fun, "(g)")))
+    commu <- eval(parse(text=paste0("igraph::", com_fun, "(g)")))
     mem <- commu$membership # module membership
     num_mod <- max(mem)  # number of max module
     num_nodes <- igraph::vcount(g) # numbero of vertex
@@ -27,7 +29,7 @@ gethub <- function(g, com_fun){
     stop('select from "fastgreedy.community" or "cluster_louvain"')
   }
 
-  # Calculation of the within-module degree
+  # Calculation of the within-module degree ----
   z_score <- numeric(num_nodes)
   for(s in 1:num_mod){
     v_seq <- subset(igraph::V(g),mem == s)
@@ -36,7 +38,7 @@ gethub <- function(g, com_fun){
     z_score[v_seq] <- (deg_sub - mean(deg_sub)) / sd(deg_sub)
   }
 
-  # Calculation of the participation coefficient
+  # Calculation of the participation coefficient ----
   participation_coeff <- numeric(num_nodes) + 1.0
   for(i in 1:num_nodes){
     mem_nei <- mem[igraph::neighbors(g,i)]
@@ -46,65 +48,79 @@ gethub <- function(g, com_fun){
     }
   }
 
-  # Classification
+  # Classification ----
   role <- vector(mode = "numeric", length = num_nodes)
+  pc <- setNames(as.data.frame(cbind(z_score,participation_coeff)),
+                 c("within_module_degree","participation_coefficient"))
 
-  pc <- as.data.frame(cbind(z_score,participation_coeff))
-  names(pc) <- c("within_module_degree","participation_coefficient")
 
   # R1: Ultra-peripheral nodes
-  v_seq <- which(pc$within_module_degree<2.5 & pc$participation_coeff<0.05)
+  v_seq <- which(pc$within_module_degree < 2.5 & pc$participation_coeff < 0.05)
   role[v_seq] <- "R1: Ultra-peripheral nodes"
 
   # R2: Peripheral nodes
-  v_seq <- which(pc$within_module_degree<2.5 & pc$participation_coeff>=0.05 & pc$participation_coeff<0.625)
+  v_seq <- which(pc$within_module_degree < 2.5 & pc$participation_coeff >= 0.05 & pc$participation_coeff < 0.625)
   role[v_seq] <- "R2: Peripheral nodes"
 
   # R3: Non-hub connectors
-  v_seq <- which(pc$within_module_degree<2.5 & pc$participation_coeff>=0.625 & pc$participation_coeff<0.8)
+  v_seq <- which(pc$within_module_degree < 2.5 & pc$participation_coeff >= 0.625 & pc$participation_coeff < 0.8)
   role[v_seq] <- "R3: Non-hub connectors"
 
   # R4: Non-hub kinless nodes
-  v_seq <- which(pc$within_module_degree<2.5 & pc$participation_coeff>=0.8)
+  v_seq <- which(pc$within_module_degree < 2.5 & pc$participation_coeff >= 0.8)
   role[v_seq] <- "R4: Non-hub kinless nodes"
 
   # R5: Provincial hubs
-  v_seq <- which(pc$within_module_degree>=2.5 & pc$participation_coeff<0.3)
+  v_seq <- which(pc$within_module_degree >= 2.5 & pc$participation_coeff < 0.3)
   role[v_seq] <- "R5: Provincial hubs"
 
   # R6: Connector hubs
-  v_seq <- which(pc$within_module_degree>=2.5 & pc$participation_coeff>=0.3 & pc$participation_coeff<0.75)
+  v_seq <- which(pc$within_module_degree >= 2.5 & pc$participation_coeff >= 0.3 & pc$participation_coeff < 0.75)
   role[v_seq] <- "R6: Connector hubs"
 
   # R7: Kinless hubs
-  v_seq <- which(pc$within_module_degree>=2.5 & pc$participation_coeff>=0.75)
+  v_seq <- which(pc$within_module_degree >= 2.5 & pc$participation_coeff >= 0.75)
   role[v_seq] <- "R7: Kinless hubs"
 
-  # result dataframe
+  # result dataframe----
   #pc <- cbind(pc,role=role)
-  result <- data.frame(node=igraph::V(g)$name, between=igraph::betweenness(g),  degree=deg, ndegree=deg/vcount(g), pc, role)
+  result <- data.frame(node=igraph::V(g)$name,
+                       module_member = mem,
+                       num_of_members = sapply(seq_along(mem), function(i)sum(mem %in% mem[i])),
+                       between=igraph::betweenness(g),
+                       degree=deg,
+                       ndegree=deg/igraph::vcount(g),
+                       pc,
+                       role)
   sortresult <- result[order(result$between, decreasing = T),]
 
-  # igplot with roll
-  roles <- sapply(strsplit(as.character(result$role), ":"), "[", 1)
-  cong <- delete.vertices(g, V(g)$name[degree(g)==0])
-  roles <- sapply(strsplit(as.character(result$role), ":"), "[", 1)
-  vrole <- c("R7","R6","R5","R4","R3")
-  vcol <- RColorBrewer::brewer.pal(5, "Set1")
-  vcols <- adjustcolor(rep("cornsilk4", vcount(cong)), alpha.f = 0.5)
+  # igplot with role
+  ## delete non connective node and connected graph ----
+  cong <- igraph::delete.vertices(g, igraph::V(g)$name[igraph::degree(g)==0])
 
-  invisible(sapply(seq_along(vrole), function(i){
-    n <- as.character(result$node[roles %in% vrole[i]])
-    if(!identical(n, character(0))){
-      vcols[which(V(cong)$name %in% n)] <<- vcol[i]
-    }
-  }
-  ))
-  cornet::igplot(cong, v.c = vcols, v.l = NA)
-  graphics::legend("topright",
-         legend = c("R7:Kinless hubs", "R6:Connector hubs", "R5:Provincial hubs",
-                    "R4:Non-hub kinless nodes", "R3:Non-hub connectors"),
-         bg = "transparent",pch = 20, col = vcol, cex = 0.8)
+  ## facter of roles ----
+  roles <- sapply(strsplit(as.character(sortresult$role[match(V(cong)$name, sortresult$node)]), "\\:"), "[", 1)
+  role_fctr <- factor(roles, levels=c("R7","R6","R5","R4","R3","R2","R1","0"))
+
+  ## node colour ----
+  vcol <- adjustcolor(c(RColorBrewer::brewer.pal(5, "Set1"), rep("cornsilk4", 3)), alpha.f = 0.5)
+  vcols <- vcol[role_fctr]
+
+  ## node size ----
+  vsiz <- c(7,7,5,5,5,2,2,2)
+  vsizs <- vsiz[role_fctr]
+
+  ## labels of select node ----
+  # vselect <- c("Heavy_chain", "Light_chain")
+  # setNames(vselect, c("H","L"))
+  # igraph::V(ig)$name
+  # vlabs <- ifelse(igraph::V(cong)$name %in% vselect, names(vselect), NA)
+
+  ## igplot ----
+  cornet::igplot(cong, v.c = vcols, v.s = vsizs, e.w = 0.5, v.l.c = "black")
+  graphics::legend("topleft",pt.cex = 3,
+                   legend = c("R7:Kinless hubs", "R6:Connector hubs", "R5:Provincial hubs",
+                              "R4:Non-hub kinless nodes", "R3:Non-hub connectors"),
+                   bg = "transparent",pch = 20, col = vcol, cex = 0.8)
   return(sortresult)
 }
-

@@ -6,8 +6,8 @@
 #' @param cl_dat A list of dataframes, result of 'cornet::cluster_mat'
 #' @examples
 #' # sample data, result of 'cluster_mat'
-#' data("cluster_dat")
-#' res <- cluster_mine(cl_dat=cluster_dat[[3]])
+#' # data("cluster_dat")
+#' #
 #'
 #' @importFrom minerva mine
 #' @importFrom foreach foreach %dopar% %do%
