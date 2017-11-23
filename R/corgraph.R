@@ -8,12 +8,13 @@
 #' @param it a vector of threshold sequence as iteration. The initial value as default, 'it =seq(0.30,0.99,by=0.01)'
 #' @examples
 #' # sample data
-#' data(cluster_dat)
-#' cormat <- cor(cluster_dat[[2]])
-#' res <- corgraph(mat = cormat)
-#' res[[1]]
-#' head(res[[2]])
-#' head(res[[3]])
+#' # nfpkm <- as.data.frame(rskodat::nfpkm)
+#' # res_cld <- cornet::dycutdf(dat = nfpkm, column = -1:-4)$cluster_dat
+#' # cormat <- cor(res_cld[["3"]])
+#' # res <- corgraph(mat = cormat)
+#' # res[[1]]
+#' # head(res[[2]])
+#' # head(res[[3]])
 #' @importFrom igraph get.edge.ids graph.adjacency
 #' @export
 corgraph <- function(mat, it = seq(0.30,0.99,by=0.01)){

@@ -16,9 +16,9 @@ get hub node.
 }
 \examples{
 # sample data
-data(cluster_dat)
-cormat <- cor(cluster_dat[[2]])
+data(cl_dat)
+cormat <- cor(cl_dat[["3"]])
 res <- corgraph(mat = cormat)
-g <- res[[1]]
+g <- res$undir.graph
 gethub(g=g, com_fun="fastgreedy.community")
 }

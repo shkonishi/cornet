@@ -21,10 +21,11 @@ Construction of a correlation network graph from correlation matrix through Rand
 }
 \examples{
 # sample data
-data(cluster_dat)
-cormat <- cor(cluster_dat[[2]])
-res <- corgraph(mat = cormat)
-res[[1]]
-head(res[[2]])
-head(res[[3]])
+# nfpkm <- as.data.frame(rskodat::nfpkm)
+# res_cld <- cornet::dycutdf(dat = nfpkm, column = -1:-4)$cluster_dat
+# cormat <- cor(res_cld[["3"]])
+# res <- corgraph(mat = cormat)
+# res[[1]]
+# head(res[[2]])
+# head(res[[3]])
 }

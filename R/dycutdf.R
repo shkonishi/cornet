@@ -7,18 +7,18 @@
 #' @param clm clustering method select from hclust options default is "average"
 #' @param column column which containing expression data default 'column=1:ncol(dat)'
 #' @param method_dycut method of dynamic cut, otherwise k number of cuttree function.
-#' @param ... additional dynamicTreeCut::cutreeDynamic options
+#' @param ... character additional dynamicTreeCut::cutreeDynamic options. E.g. "minClusterSize = 10"
 #' @examples
 #' d <- data.frame(t(iris[-5]))
 #' res <- dycutdf(dat = d, distm = "euclidean", clm = "average",
 #'                column = 1:150, method_dycut = "hybrid")
 #' res[[1]] # hclust object
-#' res[[2]] # result of dynamic cut object
-#' res[[3]] # list of splitted data.frame
+#' res[[2]] # dendrogram object
+#' res[[3]] # result of dynamic cut object
+#' res[[4]] # list of splitted data.frame
 #'
 #' ##  The following examples takes too much times
-#' # fp <- system.file("extdata/nfpkm_200.txt", package = "cornet")
-#' # nfpkm <- read.table(fp, header=TRUE, stringsAsFactors = FALSE)
+#' # nfpkm <- rskodat::nfpkm
 #' # res1 <- cornet::dycutdf(dat = nfpkm, distm = "abscorrelation", clm = "average",
 #' #     column = 5:ncol(nfpkm), method_dycut = "tree")
 #' @import dplyr
@@ -30,10 +30,10 @@
 #'
 dycutdf <- function(dat, distm="pearson", clm="average", column=1:ncol(dat), method_dycut="tree", ...){
   # argument check: dat ----
-  if (class(dat)=="data.frame"){
+  if (any(class(dat) %in% "data.frame")){
     mat <- dat[column]
   } else if (class(dat) == "matrix"){
-    mat <- data.frame(dat)
+    mat <- data.frame(dat, check.names = F)
     if(identical(dimnames(dat)[[2]], NULL)){
       names(mat) <- 1:ncol(mat)
     }

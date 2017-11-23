@@ -20,5 +20,4 @@ The result of mine is multi matrix of all node pairs, and that is too many memor
 # sample data, result of 'cluster_mat'
 # data("cluster_dat")
 #
-
 }

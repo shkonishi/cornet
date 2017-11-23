@@ -8,7 +8,7 @@
 #' # sample data, result of 'cluster_mat'
 #' # data("cluster_dat")
 #' #
-#'
+#' @importFrom stats cor
 #' @importFrom minerva mine
 #' @importFrom foreach foreach %dopar% %do%
 #' @importFrom parallel makeCluster detectCores stopCluster

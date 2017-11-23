@@ -16,6 +16,7 @@ Imports:
     igraph,
     minerva,
     parallel,
+    plyr,
     RColorBrewer,
     tidyr
 Description: This package contains tools of co-expressed genes network tools from multivariate data. 

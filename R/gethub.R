@@ -5,10 +5,10 @@
 #' @param com_fun character: function name of igraph for community detection
 #' @examples
 #' # sample data
-#' data(cluster_dat)
-#' cormat <- cor(cluster_dat[[2]])
+#' data(cl_dat)
+#' cormat <- cor(cl_dat[["3"]])
 #' res <- corgraph(mat = cormat)
-#' g <- res[[1]]
+#' g <- res$undir.graph
 #' gethub(g=g, com_fun="fastgreedy.community")
 #' @importFrom igraph delete.vertices degree fastgreedy.community cluster_louvain delete.vertices V E vcount degree betweenness
 #' @importFrom grDevices adjustcolor
@@ -117,8 +117,8 @@ gethub <- function(g, com_fun){
   # vlabs <- ifelse(igraph::V(cong)$name %in% vselect, names(vselect), NA)
 
   ## igplot ----
-  cornet::igplot(cong, v.c = vcols, v.s = vsizs, e.w = 0.5, v.l.c = "black")
-  graphics::legend("topleft",pt.cex = 3,
+  cornet::igplot(cong, v.c = vcols, v.s = vsizs, e.w = 0.5, v.l=NA, v.l.c = "black")
+  graphics::legend("topleft",pt.cex = 3, border = F,
                    legend = c("R7:Kinless hubs", "R6:Connector hubs", "R5:Provincial hubs",
                               "R4:Non-hub kinless nodes", "R3:Non-hub connectors"),
                    bg = "transparent",pch = 20, col = vcol, cex = 0.8)

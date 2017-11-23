@@ -17,7 +17,7 @@ dycutdf(dat, distm, clm, column, method_dycut, ...)
 
 \item{method_dycut}{method of dynamic cut, otherwise k number of cuttree function.}
 
-\item{...}{additional dynamicTreeCut::cutreeDynamic options}
+\item{...}{character additional dynamicTreeCut::cutreeDynamic options. E.g. "minClusterSize = 10"}
 }
 \value{
 list of results of clustering, objects was hclust, dendrogram, and list of splitted data.frame
@@ -30,12 +30,12 @@ d <- data.frame(t(iris[-5]))
 res <- dycutdf(dat = d, distm = "euclidean", clm = "average",
                column = 1:150, method_dycut = "hybrid")
 res[[1]] # hclust object
-res[[2]] # result of dynamic cut object
-res[[3]] # list of splitted data.frame
+res[[2]] # dendrogram object
+res[[3]] # result of dynamic cut object
+res[[4]] # list of splitted data.frame
 
 ##  The following examples takes too much times
-# fp <- system.file("extdata/nfpkm_200.txt", package = "cornet")
-# nfpkm <- read.table(fp, header=TRUE, stringsAsFactors = FALSE)
+# nfpkm <- rskodat::nfpkm
 # res1 <- cornet::dycutdf(dat = nfpkm, distm = "abscorrelation", clm = "average",
 #     column = 5:ncol(nfpkm), method_dycut = "tree")
 }
