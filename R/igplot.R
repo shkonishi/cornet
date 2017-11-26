@@ -34,17 +34,22 @@
 #' @importFrom graphics par plot
 #' @export
 igplot <- function(ig, lay = igraph::layout_nicely, connected = TRUE,
-                   v.l = igraph::V(ig)$name, v.l.c = "white", v.f.c = "white",
+                   v.l = NULL, v.l.c = NULL, v.f.c = "white",
                    v.s = 5, v.c = "#8B887880",
-                   e.c = "grey80", e.w = 1, e.lty = 1, ...){
+                   e.c = "grey80", e.w = 0.5, e.lty = 1, ...){
 
   # if igraph object has attibutes of vertices and edge, intial value was replaced.
-  v.c <- if(!is.null(V(ig)$color)){V(ig)$color}else{v.c}
-  e.c <- if(!is.null(E(ig)$color)){E(ig)$color}else{e.c}
+  v.c <- if(!is.null(igraph::V(ig)$v.c)){igraph::V(ig)$v.c}else{v.c}
+  v.l <- if(!is.null(igraph::V(ig)$v.l)){igraph::V(ig)$v.l}else{v.l}
+  v.l.c <- if(!is.null(igraph::V(ig)$v.l.c)){igraph::V(ig)$v.l.c}else{v.l.c}
+  v.s <- if(!is.null(igraph::V(ig)$v.s)){igraph::V(ig)$v.s}else{v.s}
+  e.c <- if(!is.null(igraph::E(ig)$e.c)){igraph::E(ig)$e.c}else{e.c}
+  e.w <- if(!is.null(igraph::E(ig)$e.w)){igraph::E(ig)$e.w}else{e.w}
+  e.lty <- if(!is.null(igraph::E(ig)$e.lty)){igraph::E(ig)$e.lty}else{e.lty}
 
   # Only connected vertex was shown
   if (connected == TRUE){
-    ig <- delete.vertices(ig, V(ig)$name[degree(ig)==0])
+    ig <- igraph::delete.vertices(ig, igraph::V(ig)$name[igraph::degree(ig)==0])
   }
 
   if (!is.function(lay)){

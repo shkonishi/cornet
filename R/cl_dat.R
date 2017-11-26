@@ -1,6 +1,6 @@
 #' The example of dycutdf output
 #'
-#' @description The list of data frame which result of 'dycutdf.R'.
+#' @description The list of data frame which result of 'dycutdf.R', using "abscorrelation" as clustering methods.
 #'     These of dataframe objects cutting of hieralchicalclustering.
 #'
 #' @docType data

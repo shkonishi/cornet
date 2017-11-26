@@ -9,7 +9,7 @@ gethub(g, com_fun)
 \arguments{
 \item{g}{igraph object}
 
-\item{com_fun}{character: function name of igraph for community detection}
+\item{com_fun}{character: function name of igraph for community detection, "fastgreedy.community" or "cluster_louvain"}
 }
 \description{
 get hub node.

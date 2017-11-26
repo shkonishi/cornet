@@ -2,7 +2,7 @@
 #' @description get hub node.
 #' @usage gethub(g, com_fun)
 #' @param g igraph object
-#' @param com_fun character: function name of igraph for community detection
+#' @param com_fun character: function name of igraph for community detection, "fastgreedy.community" or "cluster_louvain"
 #' @examples
 #' # sample data
 #' data(cl_dat)
@@ -17,7 +17,12 @@
 #' @importFrom graphics legend
 #' @export
 gethub <- function(g, com_fun){
-  # g <- glist[[1]]; com_fun <- "cluster_louvain"
+
+  # argument check: 'g' is an igraph object ----
+  if (!class(g) == "igraph"){
+    stop("'g' must be an igraph object.")
+  }
+  # argument check: com_fun ----
   com.algs <- c("fastgreedy.community", "cluster_louvain")
   if(any(com.algs %in% com_fun)){
     commu <- eval(parse(text=paste0("igraph::", com_fun, "(g)")))
@@ -28,6 +33,7 @@ gethub <- function(g, com_fun){
   }else{
     stop('select from "fastgreedy.community" or "cluster_louvain"')
   }
+
 
   # Calculation of the within-module degree ----
   z_score <- numeric(num_nodes)
@@ -99,7 +105,7 @@ gethub <- function(g, com_fun){
   cong <- igraph::delete.vertices(g, igraph::V(g)$name[igraph::degree(g)==0])
 
   ## facter of roles ----
-  roles <- sapply(strsplit(as.character(sortresult$role[match(V(cong)$name, sortresult$node)]), "\\:"), "[", 1)
+  roles <- sapply(strsplit(as.character(sortresult$role[match(igraph::V(cong)$name, sortresult$node)]), "\\:"), "[", 1)
   role_fctr <- factor(roles, levels=c("R7","R6","R5","R4","R3","R2","R1","0"))
 
   ## node colour ----
@@ -110,17 +116,21 @@ gethub <- function(g, com_fun){
   vsiz <- c(7,7,5,5,5,2,2,2)
   vsizs <- vsiz[role_fctr]
 
-  ## labels of select node ----
-  # vselect <- c("Heavy_chain", "Light_chain")
-  # setNames(vselect, c("H","L"))
-  # igraph::V(ig)$name
-  # vlabs <- ifelse(igraph::V(cong)$name %in% vselect, names(vselect), NA)
+  ## node label ----
+  vlabs <- ifelse(roles %in% c("R7","R6","R5","R4","R3"), igraph::V(cong)$name, NA)
+
+  ## modified igraph object with attribuete ----
+  igraph::V(cong)$v.c <- vcols
+  igraph::V(cong)$v.s <- vsizs
+  igraph::V(cong)$v.l <- vlabs
 
   ## igplot ----
-  cornet::igplot(cong, v.c = vcols, v.s = vsizs, e.w = 0.5, v.l=NA, v.l.c = "black")
+  cornet::igplot(cong, v.c = vcols, v.s = vsizs, e.w = 0.5, v.l=vlabs, v.l.c = "black")
   graphics::legend("topleft",pt.cex = 3, border = F,
                    legend = c("R7:Kinless hubs", "R6:Connector hubs", "R5:Provincial hubs",
                               "R4:Non-hub kinless nodes", "R3:Non-hub connectors"),
                    bg = "transparent",pch = 20, col = vcol, cex = 0.8)
-  return(sortresult)
+
+  # return modified igraph object and data.frame of hub extranction. -----
+  return(setNames(list(cong, sortresult), c("hubbed_graph", "res_hub")))
 }

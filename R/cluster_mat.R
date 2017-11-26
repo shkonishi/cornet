@@ -5,13 +5,18 @@
 #' @param res_dycut result of "dynamicTreeCut::cutreeDynamic", or "cutree"
 #' @param fcdat data.frame of one or two factor for samples, which first column is a factor for Y-axis and a second column is a factor for X-axis
 #' @examples
-#' # # arguments1: result of dycut
-#' # data(cl_dat)
-#' # # argument2: factorial data.frame one(x) or two(y,x)
+#' # # argument1: data
+#' # nfpkm <- rskodat::nfpkm
+#'
+#' # # argument2: result of dycutdf
+#' # res_dycut <- dycutdf(nfpkm, distm = "abscorrelation", column = -1:-4)
+#'
+#' # # argument3: factorial data.frame one(x) or two(y,x)
 #' # fcdat <- data.frame(runs=nfpkm$runs, days=nfpkm$days)
-#' # cluster_mat(dat, res_dycut, fcdat)
+#' # cluster_mat(nfpkm[-1:-4], res_dycut$dynamic_cut, fcdat)
+#'
 #' @importFrom dplyr %>% group_by_at mutate arrange slice ungroup
-#' @importFrom ggplot2 geom_line aes facet_wrap theme_bw
+#' @importFrom ggplot2 geom_line aes facet_wrap theme_bw labs aes_string
 #' @importFrom plyr .
 #' @importFrom tidyr gather
 #' @export
@@ -47,21 +52,19 @@ cluster_mat <- function(dat, res_dycut, fcdat){
     dplyr::arrange(.[[2]], .[[3]], .[[4]])
 
   if (ncol(fcdat) == 2){
-    ggplot2::ggplot(tmp,ggplot2::aes(x=tmp[,4], y=value, colour=tmp[,3],
+    ggplot2::ggplot(tmp,ggplot2::aes_string(x=names(tmp)[4], y=names(tmp)[5], colour=names(tmp)[3],
                                      group=interaction(tmp[,2], tmp[,3]))) +
       ggplot2::geom_line(size=0.1, alpha=0.5) +
+      ggplot2::guides(colour = ggplot2::guide_legend(override.aes = list(alpha=1, size = 5))) +
       ggplot2::theme_bw() +
       ggplot2::facet_wrap(~lab, ncol=4)
   } else {
-    ggplot2::ggplot(tmp,ggplot2::aes(x=tmp[,4], y=value,
-                                     colour=tmp[,3], group=tmp[,2])) +
+    ggplot2::ggplot(tmp,ggplot2::aes_string(x=names(tmp)[4], y=names(tmp)[5],
+                                     colour=names(tmp)[3], group=names(tmp)[2])) +
       ggplot2::geom_line(size=0.1, alpha=0.5) +
+      ggplot2::guides(colour = ggplot2::guide_legend(override.aes = list(alpha=1, size = 5))) +
       ggplot2::theme_bw() +
       ggplot2::facet_wrap(~lab, ncol=4)
-
   }
 }
-
-
-
 
