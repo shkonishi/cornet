@@ -9,7 +9,7 @@
 data(cl_dat)
 }
 \description{
-The list of data frame which result of 'dycutdf.R'.
+The list of data frame which result of 'dycutdf.R', using "abscorrelation" as clustering methods.
     These of dataframe objects cutting of hieralchicalclustering.
 }
 \examples{

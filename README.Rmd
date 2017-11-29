@@ -18,12 +18,12 @@ ls("package:cornet")
 ### data
 - 正規化した遺伝子発現データ(行:遺伝子, 列:サンプル)
 ```{r}
-# data: normalized fpkm
-fp <- system.file("extdata/nfpkm_1000.txt", package = "cornet")
-dat <- read.table(fp, header=TRUE, stringsAsFactors = FALSE)
+# data: normalized fpkm ----
+nfpkm <- rskodat::nfpkm
 
-# 200 genes
-dat[1:6,1:6]; dim(dat)
+# 1000 genes ----
+nfpkm[1:6,1:6]; dim(nfpkm)
+
 ```
 
 
@@ -32,8 +32,7 @@ dat[1:6,1:6]; dim(dat)
 - `amap::Dist`のメソッドから距離定義を選択する。別手法で作成した距離行列を`as.dist`で変換したdistオブジェクトでも良い。
 - `cutree`を使ってクラスターに分割する場合は`method_dycut`にkの値を入れる
 ```{r}
-res.cd <- dycutdf(dat = dat, distm = "abscorrelation", clm = "average",
-                           column = 5:ncol(dat), method_dycut = "tree")
+res.cd <- dycutdf(dat = nfpkm[-1:-4], distm = "abscorrelation", clm = "average", method_dycut = "tree")
 
 # cutreeで分割する場合
 # res.cd <- dycutdf(dat = dat, distm = "spearman", clm = "average",
@@ -47,17 +46,12 @@ sapply(res.cd$cluster_dat, dim)
 
 ```
 
-
-### matoedge
-- 相関行列のような対称行列から重み付きエッジリスト(完全グラフ)を作成
+### cluster_mat
+- クラスター別にplot
+- 因子のみのdata.frame
 ```{r}
-# 相関行列のような対称行列から重み付きエッジリストを作成
-cormat <- cor(res.cd$cluster_dat$`1`)
-edge.list <- matoedge(mat = cormat, format = "df", diag = F, zero.weight = F)
-head(edge.list)
-
+cluster_mat(nfpkm[-1:-4], res_dycut = res.cd$dynamic_cut, fcdat = nfpkm[2:3])
 ```
-
 
 ### corgraph
 - 相関行列から自動的に閾値を指定してエッジリストを作成する
@@ -66,22 +60,23 @@ head(edge.list)
 - 逆相関のエッジも含めてグラフ作成する場合は、クラスタリングの時に`abspearson`とかを使う
 ```{r}
 # dycutdfの結果から特定のクラスタに属するデータを取り出す
-clds <- res.cd$cluster_dat
-cld <- clds$`1`
+cld <- res.cd$cluster_dat[["3"]]
+
 # 相関係数行列
 cormat <- cor(cld)
 
 # グラフ作成
-res <- corgraph(mat = cormat)
+res.cg <- corgraph(mat = cormat)
 
 # 返り値1. igraphオブジェクト
-(g <- res$undir.graph)
+(g <- res.cg$undir.graph)
 # 返り値2. エッジリスト
-head(res$edge.list)
+head(res.cg$edge.list)
 # 返り値3. ks-testの結果
-head(res$res.ks.text)
+head(res.cg$res.ks.text)
 
 # 全クラスターについてgraphオブジェクトのみ作成
+clds <- res.cd$cluster_dat
 cl_gs <- lapply(clds, function(x)corgraph(cor(x))[[1]])
 
 # 特定の遺伝子がどのクラスタにいるのかを調べる
@@ -91,10 +86,21 @@ sapply(clds, function(x)match("gene1",names(x)))
 
 ### igplot
 igraphオブジェクトをプロットする。たくさんあるパラメータの表記をできるだけ省略したいので、よく使うオプションは初期値を指定してある。大雑把に視覚化したい時に使う。
+```{r fig.width=12, fig.height=6}
+cl_gs <- cl_gs[-1]
+par(mfrow=c(2,4))
+for (i in seq_along(cl_gs)){
+  igplot(cl_gs[[i]], v.l = NA)
+}
+
+```
+
+### gethub
+- ノードごとに中心性解析の結果を調べる
+- 中心性解析の結果(data.frame)と連結成分のみのigraphオブジェクトが返る。
 ```{r}
-
-igplot(cl_gs[[3]], v.l = NA)
-
+res.hub <- gethub(g = cl_gs[["3"]], com_fun = "cluster_louvain")
+head(res.hub[[2]])
 ```
 
 
@@ -122,14 +128,10 @@ igplot(g1, v.s = igraph::degree(g1)*10)
 ewid <- abs(igraph::E(g2)$weight)
 ecol <-  ifelse(igraph::E(g2)$weight < 0 , "steelblue3", "grey80")
 igplot(ig = g2, lay=igraph::layout.circle, v.s = 15, e.c = ecol, e.w = ewid*4)
-```
 
-#### corgraphの結果をまとめて描画する場合
-```{r fig.width=12, fig.height=6}
-par(mfrow=c(2,4))
-invisible(lapply(cl_gs[-1], function(x)igplot(ig = x, v.s = 7, v.l = NA)))
 
 ```
+
 
 #### 色々なレイアウト関数を試す
 - igraphのlayoutの関数を取得して全てplot
@@ -140,13 +142,15 @@ cornet::igplot(ig = g1, lay = "all", v.s = igraph::degree(g1)*10)
 
 ```
 
-### gethub
-- ノードごとに中心性解析の結果を調べる
-- 中心性解析の結果(data.frame)と連結成分のみのigraphオブジェクトが返る。
-```{r}
-res.hub <- gethub(g = cl_g[[3]], com_fun = "cluster_louvain")
 
-head(res.hub[[2]])
+### matoedge
+- 相関行列のような対称行列から重み付きエッジリスト(完全グラフ)を作成
+```{r}
+# 相関行列のような対称行列から重み付きエッジリストを作成
+cormat <- cor(res.cd$cluster_dat$`1`)
+edge.list <- matoedge(mat = cormat, format = "df", diag = F, zero.weight = F)
+head(edge.list)
+
 ```
 
 
@@ -156,7 +160,7 @@ head(res.hub[[2]])
 - TICの大きい順に並べる
 ```{r}
 # mineを連続実行、結果を整形出力
-cldat <- res.clm$cluster_dat$`2`
+cldat <- as.data.frame(res.cd$cluster_dat[["3"]])
 res.mic <- cluster_mine(cl_dat = cldat)
 
 # 結果を一部表示

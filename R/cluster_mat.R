@@ -20,7 +20,6 @@
 #' @importFrom plyr .
 #' @importFrom tidyr gather
 #' @export
-
 cluster_mat <- function(dat, res_dycut, fcdat){
   # argument check: dat and fcdat ----
   if (nrow(dat) != nrow(fcdat)){

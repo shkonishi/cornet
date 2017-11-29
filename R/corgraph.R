@@ -53,6 +53,6 @@ corgraph <- function(mat, it = seq(0.30,0.99,by=0.01)){
   nedge.pos <- igraph::get.edge.ids(g, as.vector(t(nedgel[nedgel$value < 0, 1:2])))
 
   igraph::E(g)$e.c <-
-    ifelse(igraph::E(g) %in% igraph::E(g)[nedge.pos], "red", "grey80")
+    ifelse(igraph::E(g) %in% igraph::E(g)[nedge.pos], "deepskyblue", "grey80")
   return(list(undir.graph = g, edge.list = nedgel, res.ks.text=res.ks.dat))
 }

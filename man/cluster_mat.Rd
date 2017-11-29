@@ -17,9 +17,14 @@ cluster_mat(dat, res_dycut, fcdat)
 split count data of transcriptome with result of gene clustering, such as "cutree" or "cutreeDynamic".
 }
 \examples{
-# # arguments1: result of dycut
-# data(cl_dat)
-# # argument2: factorial data.frame one(x) or two(y,x)
+# # argument1: data
+# nfpkm <- rskodat::nfpkm
+
+# # argument2: result of dycutdf
+# res_dycut <- dycutdf(nfpkm, distm = "abscorrelation", column = -1:-4)
+
+# # argument3: factorial data.frame one(x) or two(y,x)
 # fcdat <- data.frame(runs=nfpkm$runs, days=nfpkm$days)
-# cluster_mat(dat, res_dycut, fcdat)
+# cluster_mat(nfpkm[-1:-4], res_dycut$dynamic_cut, fcdat)
+
 }
