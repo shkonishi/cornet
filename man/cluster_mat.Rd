@@ -4,7 +4,7 @@
 \alias{cluster_mat}
 \title{matplot per cluster}
 \usage{
-cluster_mat(dat, res_dycut, fcdat)
+cluster_mat(dat, res_dycut, fcdat, facet_ncol, facet_nrow)
 }
 \arguments{
 \item{dat}{a data frame of count data for transcriptome, which columns are genes and row are samples.}
@@ -12,19 +12,24 @@ cluster_mat(dat, res_dycut, fcdat)
 \item{res_dycut}{result of "dynamicTreeCut::cutreeDynamic", or "cutree"}
 
 \item{fcdat}{data.frame of one or two factor for samples, which first column is a factor for Y-axis and a second column is a factor for X-axis}
+
+\item{facet_ncol}{ncol argument of facet_wrap}
+
+\item{facet_nrow}{nrow argument of facet_wrap}
 }
 \description{
 split count data of transcriptome with result of gene clustering, such as "cutree" or "cutreeDynamic".
 }
 \examples{
 # # argument1: data
-# nfpkm <- rskodat::nfpkm
+# data <- rskodat::nfpkm[-1:-4]
 
 # # argument2: result of dycutdf
-# res_dycut <- dycutdf(nfpkm, distm = "abscorrelation", column = -1:-4)
+# res_dyct <- dycutdf(nfpkm, distm = "abscorrelation", column = -1:-4)
+# cl <- res_dyct$dynamic_cut
 
 # # argument3: factorial data.frame one(x) or two(y,x)
 # fcdat <- data.frame(runs=nfpkm$runs, days=nfpkm$days)
-# cluster_mat(nfpkm[-1:-4], res_dycut$dynamic_cut, fcdat)
+# cluster_mat(data, cl, fcdat, 3, 4)
 
 }

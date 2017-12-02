@@ -38,7 +38,7 @@ igplot <- function(ig, lay = igraph::layout_nicely, connected = TRUE,
                    v.s = 5, v.c = "#8B887880",
                    e.c = "grey80", e.w = 0.5, e.lty = 1, ...){
 
-  # if igraph object has attibutes of vertices and edge, intial value was replaced.
+  # if igraph object has attibutes of vertices and edge, initial value was replaced.
   v.c <- if(!is.null(igraph::V(ig)$v.c)){igraph::V(ig)$v.c}else{v.c}
   v.l <- if(!is.null(igraph::V(ig)$v.l)){igraph::V(ig)$v.l}else{v.l}
   v.l.c <- if(!is.null(igraph::V(ig)$v.l.c)){igraph::V(ig)$v.l.c}else{v.l.c}

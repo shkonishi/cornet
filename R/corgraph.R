@@ -7,10 +7,11 @@
 #' @param mat correlation matrix
 #' @param it a vector of threshold sequence as iteration. The initial value as default, 'it =seq(0.30,0.99,by=0.01)'
 #' @examples
-#' # sample data
+#' # # arguments
 #' # nfpkm <- as.data.frame(rskodat::nfpkm)
 #' # res_cld <- cornet::dycutdf(dat = nfpkm, column = -1:-4)$cluster_dat
 #' # cormat <- cor(res_cld[["3"]])
+#' # # create cor graph with a selected cluster
 #' # res <- corgraph(mat = cormat)
 #' # res[[1]]
 #' # head(res[[2]])
