@@ -16,7 +16,7 @@ ls("package:cornet")
 ```
 
 ### data
-- 正規化した遺伝子発現データ(行:遺伝子, 列:サンプル)
+- サンプルデータ(正規化済み, 行:遺伝子, 列:サンプル)    
 ```{r}
 # data: normalized fpkm ----
 nfpkm <- rskodat::nfpkm
@@ -29,10 +29,11 @@ nfpkm[1:6,1:6]; dim(nfpkm)
 
 ### dycutdf
 遺伝子のクラスタリングを行い、`dynamicTreeCut::cutreeDynamicTree`を用いてクラスタを検出する。クラスタごとのdataframe等を返す。
-- `amap::Dist`のメソッドから距離定義を選択する。別手法で作成した距離行列を`as.dist`で変換したdistオブジェクトでも良い。
-- `cutree`を使ってクラスターに分割する場合は`method_dycut`にkの値を入れる
+- `amap::Dist`のメソッドから距離定義を選択する。別手法で作成した距離行列を`as.dist`で変換したdistオブジェクトでも良い。  
+- `cutree`を使ってクラスターに分割する場合は`method_dycut`にkの値を入れる  
+
 ```{r}
-res.cd <- dycutdf(dat = nfpkm[-1:-4], distm = "abscorrelation", clm = "average", method_dycut = "tree")
+res.cd <- dycutdf(dat = nfpkm[-1:-4], distm = "abscorrelation", clm = "average", method_dycut = "tree") 
 
 # cutreeで分割する場合
 # res.cd <- dycutdf(dat = dat, distm = "spearman", clm = "average",
@@ -48,7 +49,8 @@ sapply(res.cd$cluster_dat, dim)
 
 ### cluster_mat
 - クラスター別にplot
-- 因子のみのdata.frame
+- 因子のみのdata.frame  
+
 ```{r}
 cluster_mat(nfpkm[-1:-4], res_dycut = res.cd$dynamic_cut, fcdat = nfpkm[2:3])
 ```
@@ -57,7 +59,8 @@ cluster_mat(nfpkm[-1:-4], res_dycut = res.cd$dynamic_cut, fcdat = nfpkm[2:3])
 - 相関行列から自動的に閾値を指定してエッジリストを作成する
 - igraphオブジェクト, エッジリスト, ks-testの結果が返る
 - エッジリストには相関係数が属性値の列として加えられている(負の相関の情報はここから取る
-- 逆相関のエッジも含めてグラフ作成する場合は、クラスタリングの時に`abspearson`とかを使う
+- 逆相関のエッジも含めてグラフ作成する場合は、クラスタリングの時に`abspearson`とかを使う  
+
 ```{r}
 # dycutdfの結果から特定のクラスタに属するデータを取り出す
 cld <- res.cd$cluster_dat[["3"]]
@@ -137,8 +140,8 @@ igplot(ig = g2, lay=igraph::layout.circle, v.s = 15, e.c = ecol, e.w = ewid*4)
 - igraphのlayoutの関数を取得して全てplot
 - データの種類とlayout関数の組み合わせによってはerrorになる
 ```{r fig.width=12, fig.height=10}
-par(mfrow = c(4,4))
-cornet::igplot(ig = g1, lay = "all", v.s = igraph::degree(g1)*10)
+par(mfrow = c(4,4))　
+cornet::igplot(ig = g1, lay = "all", v.s = igraph::degree(g1)*10)  
 
 ```
 
