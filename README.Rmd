@@ -33,7 +33,7 @@ nfpkm[1:6,1:6]; dim(nfpkm)
 - `cutree`を使ってクラスターに分割する場合は`method_dycut`にkの値を入れる  
 
 ```{r}
-res.cd <- dycutdf(dat = nfpkm[-1:-4], distm = "abscorrelation", clm = "average", method_dycut = "tree") 
+res.cd <- cornet::dycutdf(dat = nfpkm[-1:-4], distm = "abscorrelation", clm = "average", method_dycut = "tree") 
 
 # cutreeで分割する場合
 # res.cd <- dycutdf(dat = dat, distm = "spearman", clm = "average",
@@ -52,7 +52,7 @@ sapply(res.cd$cluster_dat, dim)
 - 因子のみのdata.frame  
 
 ```{r}
-cluster_mat(nfpkm[-1:-4], res_dycut = res.cd$dynamic_cut, fcdat = nfpkm[2:3])
+cornet::cluster_mat(nfpkm[-1:-4], res_dycut = res.cd$dynamic_cut, fcdat = nfpkm[2:3])
 ```
 
 ### corgraph
@@ -62,8 +62,8 @@ cluster_mat(nfpkm[-1:-4], res_dycut = res.cd$dynamic_cut, fcdat = nfpkm[2:3])
 - 逆相関のエッジも含めてグラフ作成する場合は、クラスタリングの時に`abspearson`とかを使う  
 
 ```{r}
-# dycutdfの結果から特定のクラスタに属するデータを取り出す
-cld <- res.cd$cluster_dat[["3"]]
+# dycutdfの結果から特定のクラスタに属するデータを取り出す　
+cld <- res.cd$cluster_dat[["3"]]　
 
 # 相関係数行列
 cormat <- cor(cld)
@@ -80,7 +80,7 @@ head(res.cg$res.ks.text)
 
 # 全クラスターについてgraphオブジェクトのみ作成
 clds <- res.cd$cluster_dat
-cl_gs <- lapply(clds, function(x)corgraph(cor(x))[[1]])
+cl_gs <- lapply(clds, function(x)cornet::corgraph(cor(x))[[1]])
 
 # 特定の遺伝子がどのクラスタにいるのかを調べる
 sapply(clds, function(x)match("gene1",names(x)))
@@ -90,20 +90,22 @@ sapply(clds, function(x)match("gene1",names(x)))
 ### igplot
 igraphオブジェクトをプロットする。たくさんあるパラメータの表記をできるだけ省略したいので、よく使うオプションは初期値を指定してある。大雑把に視覚化したい時に使う。
 ```{r fig.width=12, fig.height=6}
-cl_gs <- cl_gs[-1]
-par(mfrow=c(2,4))
-for (i in seq_along(cl_gs)){
-  igplot(cl_gs[[i]], v.l = NA)
-}
-
+cl_gs <- cl_gs[-1]　
+par(mfrow=c(2,4))　
+for (i in seq_along(cl_gs)){　
+  cornet::igplot(cl_gs[[i]], v.l = NA)　
+}　
+　
 ```
 
 ### gethub
 - ノードごとに中心性解析の結果を調べる
 - 中心性解析の結果(data.frame)と連結成分のみのigraphオブジェクトが返る。
 ```{r}
-res.hub <- gethub(g = cl_gs[["3"]], com_fun = "cluster_louvain")
+
+res.hub <- cornet::gethub(g = cl_gs[["3"]], com_fun = "cluster_louvain")
 head(res.hub[[2]])
+
 ```
 
 

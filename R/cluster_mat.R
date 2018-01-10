@@ -102,6 +102,7 @@ cluster_mat <- function(dat, res_dycut, fcdat, facet_ncol=3, facet_nrow=4){
         ggplot2::facet_wrap(~lab, ncol=4)
       plot(ggi)
     }
+    return(ggi)
   }
 }
 

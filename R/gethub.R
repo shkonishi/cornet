@@ -7,16 +7,17 @@
 #' # sample data
 #' data(cl_dat)
 #' cormat <- cor(cl_dat[["3"]])
-#' res <- corgraph(mat = cormat)
+#' res <- cornet::corgraph(mat = cormat)
 #' g <- res$undir.graph
-#' gethub(g=g, com_fun="fastgreedy.community")
+#' reshub <- cornet::gethub(g=g, com_fun="fastgreedy.community")
+#' #
 #' @importFrom igraph delete.vertices degree fastgreedy.community cluster_louvain delete.vertices V E vcount degree betweenness
 #' @importFrom grDevices adjustcolor
 #' @importFrom RColorBrewer brewer.pal
 #' @importFrom stats sd setNames
 #' @importFrom graphics legend
 #' @export
-gethub <- function(g, com_fun){
+gethub <- function(g, com_fun="cluster_louvain"){
 
   # argument check: 'g' is an igraph object ----
   if (!class(g) == "igraph"){
@@ -28,7 +29,7 @@ gethub <- function(g, com_fun){
     commu <- eval(parse(text=paste0("igraph::", com_fun, "(g)")))
     mem <- commu$membership # module membership
     num_mod <- max(mem)  # number of max module
-    num_nodes <- igraph::vcount(g) # numbero of vertex
+    num_nodes <- igraph::vcount(g) # number of vertex
     deg <- igraph::degree(g) # degree
   }else{
     stop('select from "fastgreedy.community" or "cluster_louvain"')
@@ -97,7 +98,8 @@ gethub <- function(g, com_fun){
                        degree=deg,
                        ndegree=deg/igraph::vcount(g),
                        pc,
-                       role)
+                       role,
+                       stringsAsFactors = F)
   sortresult <- result[order(result$between, decreasing = T),]
 
   # igplot with role
