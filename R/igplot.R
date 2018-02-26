@@ -39,14 +39,14 @@ igplot <- function(ig, lay = igraph::layout_nicely, connected = TRUE,
                    e.c = "grey80", e.w = 0.5, e.lty = 1, ...){
 
   # if igraph object has attibutes of vertices and edge, initial value was replaced.
-  v.c <- if(!is.null(igraph::V(ig)$v.c)){igraph::V(ig)$v.c}else{v.c}
-  v.l <- if(!is.null(igraph::V(ig)$v.l)){igraph::V(ig)$v.l}else{v.l}
-  v.l.c <- if(!is.null(igraph::V(ig)$v.l.c)){igraph::V(ig)$v.l.c}else{v.l.c}
-  v.l.cx <- if(!is.null(igraph::V(ig)$v.l.cx)){igraph::V(ig)$v.l.cx}else{v.l.cx}
-  v.s <- if(!is.null(igraph::V(ig)$v.s)){igraph::V(ig)$v.s}else{v.s}
-  e.c <- if(!is.null(igraph::E(ig)$e.c)){igraph::E(ig)$e.c}else{e.c}
-  e.w <- if(!is.null(igraph::E(ig)$e.w)){igraph::E(ig)$e.w}else{e.w}
-  e.lty <- if(!is.null(igraph::E(ig)$e.lty)){igraph::E(ig)$e.lty}else{e.lty}
+  v.c <- if(is.null(v.c) & !is.null(igraph::V(ig)$v.c)){igraph::V(ig)$v.c}else{v.c}
+  v.l <- if(is.null(v.l) & !is.null(igraph::V(ig)$v.l)){igraph::V(ig)$v.l}else{v.l}
+  v.l.c <- if(is.null(v.l.c) & !is.null(igraph::V(ig)$v.l.c)){igraph::V(ig)$v.l.c}else{v.l.c}
+  v.l.cx <- if(is.null(v.l.cx) & !is.null(igraph::V(ig)$v.l.cx)){igraph::V(ig)$v.l.cx}else{v.l.cx}
+  v.s <- if(is.null(v.s) & !is.null(igraph::V(ig)$v.s)){igraph::V(ig)$v.s}else{v.s}
+  e.c <- if(is.null(e.c) & !is.null(igraph::E(ig)$e.c)){igraph::E(ig)$e.c}else{e.c}
+  e.w <- if(is.null(e.w) & !is.null(igraph::E(ig)$e.w)){igraph::E(ig)$e.w}else{e.w}
+  e.lty <- if(is.null(e.lty) & !is.null(igraph::E(ig)$e.lty)){igraph::E(ig)$e.lty}else{e.lty}
 
   # Only connected vertex was shown
   if (connected == TRUE){
