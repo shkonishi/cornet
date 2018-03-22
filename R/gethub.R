@@ -31,6 +31,10 @@ gethub <- function(g, com_fun="cluster_louvain"){
     num_mod <- max(mem)  # number of max module
     num_nodes <- igraph::vcount(g) # number of vertex
     deg <- igraph::degree(g) # degree
+
+    # print modularity
+    print(paste0("modularity:", round(commu$modularity, 3)))
+
   }else{
     stop('select from "fastgreedy.community" or "cluster_louvain"')
   }
@@ -127,11 +131,11 @@ gethub <- function(g, com_fun="cluster_louvain"){
   igraph::V(cong)$v.l <- vlabs
 
   ## igplot ----
-  cornet::igplot(cong, v.c = vcols, v.s = vsizs, e.w = 0.5, v.l=vlabs, v.l.c = "black")
-  graphics::legend("topleft",pt.cex = 3, border = F,
-                   legend = c("R7:Kinless hubs", "R6:Connector hubs", "R5:Provincial hubs",
-                              "R4:Non-hub kinless nodes", "R3:Non-hub connectors"),
-                   bg = "transparent",pch = 20, col = vcol, cex = 0.8)
+  # cornet::igplot(cong, v.c = vcols, v.s = vsizs, e.w = 0.5, v.l=vlabs, v.l.c = "black")
+  # graphics::legend("topleft",pt.cex = 3, border = F,
+  #                  legend = c("R7:Kinless hubs", "R6:Connector hubs", "R5:Provincial hubs",
+  #                             "R4:Non-hub kinless nodes", "R3:Non-hub connectors"),
+  #                  bg = "transparent",pch = 20, col = vcol, cex = 0.8)
 
   # return modified igraph object and data.frame of hub extranction. -----
   return(setNames(list(cong, sortresult), c("hubbed_graph", "res_hub")))

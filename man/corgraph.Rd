@@ -4,12 +4,13 @@
 \alias{corgraph}
 \title{Construction of a network graph from correlation matxix}
 \usage{
-corgraph(mat, it = seq(0.30,0.99,by=0.01))
+corgraph(mat, thresh = seq(0.30,0.99,by=0.01))
 }
 \arguments{
 \item{mat}{correlation matrix}
 
-\item{it}{a vector of threshold sequence as iteration. The initial value as default, 'it =seq(0.30,0.99,by=0.01)'}
+\item{thresh}{a vector of threshold sequence as iteration. The initial value as default, 'thresh =seq(0.30,0.99,by=0.01)'
+if using an arbitral threshold, set a threshold value like as "thresh = 0.85".}
 }
 \value{
 A list consists from one igraph object and two dataframes. The one is a weighted edge list, the another one is
@@ -20,10 +21,11 @@ Construction of a correlation network graph from correlation matrix through Rand
    if negetive correlation exists, these information were added to result of igraph object.
 }
 \examples{
-# sample data
+# # arguments
 # nfpkm <- as.data.frame(rskodat::nfpkm)
 # res_cld <- cornet::dycutdf(dat = nfpkm, column = -1:-4)$cluster_dat
 # cormat <- cor(res_cld[["3"]])
+# # create cor graph with a selected cluster
 # res <- corgraph(mat = cormat)
 # res[[1]]
 # head(res[[2]])

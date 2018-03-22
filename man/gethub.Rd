@@ -18,7 +18,8 @@ get hub node.
 # sample data
 data(cl_dat)
 cormat <- cor(cl_dat[["3"]])
-res <- corgraph(mat = cormat)
+res <- cornet::corgraph(mat = cormat)
 g <- res$undir.graph
-gethub(g=g, com_fun="fastgreedy.community")
+reshub <- cornet::gethub(g=g, com_fun="fastgreedy.community")
+#
 }

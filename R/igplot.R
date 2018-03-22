@@ -1,12 +1,13 @@
 #' simple plot of igraph object
 #' @description Shortening several 'plot.igraph' options, and these has initial value.
-#' @usage igplot(ig, lay, connected, v.l, v.l.c, v.l.cx, v.f.c, v.s, v.c, e.c, e.w, e.lty, ...)
+#' @usage igplot(ig, lay, connected, v.l, v.l.c, v.l.cx, v.f.c, v.s, v.c, v.l.f, v.shp,
+#'     e.c, e.w, e.lty, ...)
 #' @param ig igraph object
 #' @param lay layout function of igraph, if 'lay="all"', all layout functions were performed.
 #' @param connected logical: default is true, connected vertex was shown.
-#' @param v.c,v.f.c,v.l,v.l.c,v.l.cx,v.s vertex parameters, v.c(vertex.color), v.f(vertex.frame.color), v.l(vertex.label), v.l.c(vertex.label.color), v.l.cx(vertex.label.cex), v.s(vertex.size)
+#' @param v.c,v.f.c,v.l,v.l.c,v.l.cx,v.s,v.l.f,v.shp, vertex parameters, v.c(vertex.color), v.f.c(vertex.frame.color), v.l(vertex.label), v.l.c(vertex.label.color), v.l.cx(vertex.label.cex), v.s(vertex.size), v.l.f(vertex.label.family), v.shp(vertex.shape)
 #' @param e.c,e.w,e.lty edge parameters, e.c(edge.color), e.w(edge.width), e.lty(edge.lty)
-#' @param ... other arguments of plot.igraph
+#' @param ... other arguments of plot.igraph. E.g. margin, frame, and main
 #' @examples
 #' # sample data
 #' dat <- data.frame(
@@ -34,8 +35,8 @@
 #' @importFrom graphics par plot
 #' @export
 igplot <- function(ig, lay = igraph::layout_nicely, connected = TRUE,
-                   v.l = NULL, v.l.c = NULL, v.l.cx = 0.8, v.f.c = "white",
-                   v.s = 5, v.c = "#8B887880",
+                   v.l = NULL, v.l.c = NULL, v.l.cx = 0.8, v.f.c = NA,
+                   v.s = 5, v.c = "#8B887880", v.l.f ="Helvetica", v.shp = NULL,
                    e.c = "grey80", e.w = 0.5, e.lty = 1, ...){
 
   # if igraph object has attibutes of vertices and edge, initial value was replaced.
@@ -44,6 +45,8 @@ igplot <- function(ig, lay = igraph::layout_nicely, connected = TRUE,
   v.l.c <- if(is.null(v.l.c) & !is.null(igraph::V(ig)$v.l.c)){igraph::V(ig)$v.l.c}else{v.l.c}
   v.l.cx <- if(all(v.l.cx == 0.8) & !is.null(igraph::V(ig)$v.l.cx)){igraph::V(ig)$v.l.cx}else{v.l.cx}
   v.s <- if(all(v.s == 5) & !is.null(igraph::V(ig)$v.s)){igraph::V(ig)$v.s}else{v.s}
+  v.f.c <- if(all(is.na(v.f.c)) & !is.null(igraph::V(ig)$v.f.c)){igraph::V(ig)$v.f.c}else{v.f.c}
+  v.shp <- if(is.null(v.shp) & !is.null(igraph::V(ig)$v.shp)){igraph::V(ig)$v.shp}else{v.shp}
   e.c <- if(all(e.c == "grey80") & !is.null(igraph::E(ig)$e.c)){igraph::E(ig)$e.c}else{e.c}
   e.w <- if(all(e.w == 0.5) & !is.null(igraph::E(ig)$e.w)){igraph::E(ig)$e.w}else{e.w}
   e.lty <- if(all(e.lty == 1) & !is.null(igraph::E(ig)$e.lty)){igraph::E(ig)$e.lty}else{e.lty}
@@ -65,6 +68,7 @@ igplot <- function(ig, lay = igraph::layout_nicely, connected = TRUE,
             igraph::plot.igraph(ig, layout=coords,
                                 vertex.label = v.l, vertex.label.color = v.l.c, vertex.frame.color=v.f.c,
                                 vertex.label.cex = v.l.cx, vertex.size = v.s, vertex.color = v.c,
+                                vertex.label.family = v.l.f, vertex.shape = v.shp,
                                 edge.color = e.c, edge.width = e.w, edge.lty = e.lty, edge.lty=e.lty,
                                 main = x, ...)
           },
@@ -81,6 +85,7 @@ igplot <- function(ig, lay = igraph::layout_nicely, connected = TRUE,
     par(mar=c(0,0,1,0))
     plot(ig, layout=lay, vertex.label = v.l, vertex.label.color = v.l.c, vertex.label.cex = v.l.cx,
          vertex.frame.color=v.f.c, vertex.size = v.s, vertex.color = v.c,
+         vertex.label.family = v.l.f, vertex.shape = v.shp,
          edge.color = e.c, edge.width = e.w, edge.lty=e.lty, ...
     )
   }

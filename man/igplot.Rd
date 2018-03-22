@@ -4,7 +4,8 @@
 \alias{igplot}
 \title{simple plot of igraph object}
 \usage{
-igplot(ig, lay, connected, v.l, v.l.c, v.l.cx, v.f.c, v.s, v.c, e.c, e.w, e.lty, ...)
+igplot(ig, lay, connected, v.l, v.l.c, v.l.cx, v.f.c, v.s, v.c, v.l.f, v.shp,
+    e.c, e.w, e.lty, ...)
 }
 \arguments{
 \item{ig}{igraph object}
@@ -13,11 +14,11 @@ igplot(ig, lay, connected, v.l, v.l.c, v.l.cx, v.f.c, v.s, v.c, e.c, e.w, e.lty,
 
 \item{connected}{logical: default is true, connected vertex was shown.}
 
-\item{v.c, v.f.c, v.l, v.l.c, v.l.cx, v.s}{vertex parameters, v.c(vertex.color), v.f(vertex.frame.color), v.l(vertex.label), v.l.c(vertex.label.color), v.l.cx(vertex.label.cex), v.s(vertex.size)}
+\item{v.c, v.f.c, v.l, v.l.c, v.l.cx, v.s, v.l.f, v.shp, }{vertex parameters, v.c(vertex.color), v.f.c(vertex.frame.color), v.l(vertex.label), v.l.c(vertex.label.color), v.l.cx(vertex.label.cex), v.s(vertex.size), v.l.f(vertex.label.family), v.shp(vertex.shape)}
 
 \item{e.c, e.w, e.lty}{edge parameters, e.c(edge.color), e.w(edge.width), e.lty(edge.lty)}
 
-\item{...}{other arguments of plot.igraph}
+\item{...}{other arguments of plot.igraph. E.g. margin, frame, and main}
 }
 \description{
 Shortening several 'plot.igraph' options, and these has initial value.
