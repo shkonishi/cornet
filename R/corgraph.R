@@ -52,14 +52,14 @@ corgraph <- function(mat, thresh = seq(0.30,0.99,by=0.01)){
     print(paste0("thresh:", th,  "  p:", pv))
   }
 
-  # adjmat for igraph
+  # adjmat for igraph ----
   mtx_opt <- ifelse(mtx > th, 1, 0)
-  # create igraph object
+
+  # create igraph object ----
   g <- igraph::graph.adjacency(adjmatrix = mtx_opt, mode = "undirected", diag = F)
 
-  # negative correlation edge to matrix for searching edge from igraph object
+  # negative correlation edge to matrix for searching edge from igraph object ----
   nedgel <- matoedge(ifelse(mat > th | mat < -th, mat, 0), format = "df")
-  #nedge.mt <-  # negative correlation edge mat
   nedge.pos <- igraph::get.edge.ids(g, as.vector(t(nedgel[nedgel$value < 0, 1:2])))
 
   igraph::E(g)$e.c <-

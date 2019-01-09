@@ -4,32 +4,48 @@
 \alias{cluster_mat}
 \title{matplot per cluster}
 \usage{
-cluster_mat(dat, res_dycut, fcdat, facet_ncol, facet_nrow)
+cluster_mat(dat, res_dycut, fcdat, fctrl_col, facet_ncol, facet_nrow)
 }
 \arguments{
 \item{dat}{a data frame of count data for transcriptome, which columns are genes and row are samples.}
 
 \item{res_dycut}{result of "dynamicTreeCut::cutreeDynamic", or "cutree"}
 
-\item{fcdat}{data.frame of one or two factor for samples, which first column is a factor for Y-axis and a second column is a factor for X-axis}
+\item{fcdat}{data.frame of one or two factor for samples, which first column is a factor for Y-axis and a second column is a factor for X-axis.
+If samples factor is not unique and replicate, median of replicate was expression value.}
 
-\item{facet_ncol}{ncol argument of facet_wrap}
+\item{fctrl_col}{colour code for colour factor. The default value is NULL, then default ggplot colours.}
 
-\item{facet_nrow}{nrow argument of facet_wrap}
+\item{facet_ncol}{ncol argument of facet_wrap. The default value is 3.}
+
+\item{facet_nrow}{nrow argument of facet_wrap. The default value is 4}
 }
 \description{
 split count data of transcriptome with result of gene clustering, such as "cutree" or "cutreeDynamic".
 }
 \examples{
-# # argument1: data
-# data <- rskodat::nfpkm[-1:-4]
-
+#
+# # argument1: data containing replicate or not.
+# nfpkm <- rskodat::nfpkm
+# nfpkm_norep <- nfpkm \%>\% group_by_at(1:4) \%>\% summarise_at(vars(-1:-4), funs(median))
+#
 # # argument2: result of dycutdf
-# res_dyct <- dycutdf(nfpkm, distm = "abscorrelation", column = -1:-4)
-# cl <- res_dyct$dynamic_cut
-
+# res_dyct1 <- cornet::dycutdf(nfpkm, distm = "spearman", column = -1:-4)
+# res_dyct2 <- cornet::dycutdf(nfpkm_norep, distm = "spearman", column = -1:-4)
+#
+# cl1 <- res_dyct1$dynamic_cut
+# cl2 <- res_dyct2$dynamic_cut
+#
 # # argument3: factorial data.frame one(x) or two(y,x)
-# fcdat <- data.frame(runs=nfpkm$runs, days=nfpkm$days)
-# cluster_mat(data, cl, fcdat, 3, 4)
+# fcdat1 <- data.frame(runs=nfpkm$runs, days=nfpkm$days)
+# fcdat2 <- data.frame(runs=nfpkm_norep$runs, days=nfpkm_norep$days)
+#
+# # execution
+# res1 <- cornet::cluster_mat(dat = nfpkm[-1:-4], res_dycut = cl1, fcdat = fcdat1)
+# res2 <- cornet::cluster_mat(dat = nfpkm_norep[-1:-4], res_dycut = cl2, fcdat = fcdat2,
+#                            fctrl_col = c(1,2,4))
+#
+# # drawing selected panels
+# do.call(gridExtra::grid.arrange, c(res2[c(2,5)], list(ncol=2)))
 
 }
